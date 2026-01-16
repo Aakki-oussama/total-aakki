@@ -33,14 +33,14 @@ export default function DataTable<T>({
     }
 
     return (
-        <div className="w-full overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[600px]">
+        <div className="w-full overflow-x-auto custom-scrollbar">
+            <table className="w-full text-left border-collapse">
                 <thead>
                     <tr className="border-b border-border bg-muted/5">
                         {columns.map((col, i) => (
                             <th
                                 key={i}
-                                className={`px-6 py-4 text-xs font-bold uppercase tracking-widest text-muted/70 ${col.className || ''}`}
+                                className={`px-4 sm:px-6 py-4 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-muted/70 whitespace-nowrap ${col.className || ''}`}
                             >
                                 {col.header}
                             </th>
@@ -53,14 +53,19 @@ export default function DataTable<T>({
                             key={rowIndex}
                             className="group hover:bg-muted/5 transition-colors duration-200"
                         >
-                            {columns.map((col, colIndex) => (
-                                <td
-                                    key={colIndex}
-                                    className={`px-6 py-4 text-sm font-medium text-main ${col.className || ''}`}
-                                >
-                                    {col.render(item)}
-                                </td>
-                            ))}
+                            {columns.map((col, colIndex) => {
+                                const isRightAligned = col.className?.includes('text-right');
+                                return (
+                                    <td
+                                        key={colIndex}
+                                        className={`px-4 sm:px-6 py-4 text-xs sm:text-sm font-medium text-main ${col.className || ''}`}
+                                    >
+                                        <div className={`flex items-center ${isRightAligned ? 'justify-end' : ''}`}>
+                                            {col.render(item)}
+                                        </div>
+                                    </td>
+                                );
+                            })}
                         </tr>
                     ))}
                 </tbody>

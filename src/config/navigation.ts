@@ -26,10 +26,10 @@ export const navItems: NavItem[] = [
         path: '/analytics'
     },
     {
-        id: 'users',
+        id: 'clients',
         label: 'Clients',
         icon: Users,
-        path: '/users'
+        path: '/clients'
     },
     {
         id: 'credits',

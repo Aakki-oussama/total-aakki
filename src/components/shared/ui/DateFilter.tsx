@@ -46,20 +46,22 @@ export default function DateFilter({
             <Button
                 variant="secondary"
                 onClick={handleButtonClick}
-                className="w-full sm:w-auto h-[50px] px-4 sm:px-6 rounded-2xl flex items-center justify-center gap-3 border-border shadow-sm group whitespace-nowrap"
+                className="h-[48px] px-3 sm:px-5 rounded-xl sm:rounded-2xl flex items-center justify-center gap-2 border-border/60 shadow-sm group whitespace-nowrap bg-surface/80 hover:bg-surface transition-all"
             >
                 <CalendarIcon
                     className={`text-muted group-hover:text-primary transition-colors ${iconConfig.sizes.breadcrumb}`}
                     strokeWidth={iconConfig.strokeWidth}
                 />
-                <span className={`text-sm font-bold hidden sm:inline ${date ? 'text-primary' : 'text-main'}`}>
-                    {date ? new Date(date).toLocaleDateString('fr-FR') : label}
+
+                {/* On mobile: Hide text if no date is picked, show short date if picked. On desktop: show full label, then date. */}
+                <span className={`text-xs sm:text-sm font-bold ${date ? 'text-primary' : 'text-main'} ${!date ? 'hidden sm:inline-block' : 'inline-block'}`}>
+                    {date ? new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) : label}
                 </span>
 
                 {date && (
                     <div
                         onClick={handleClear}
-                        className="ml-0 sm:ml-2 p-1 rounded-lg hover:bg-red-50 text-muted hover:text-red-500 transition-all"
+                        className="p-1 rounded-md hover:bg-red-50 text-muted/50 hover:text-red-500 transition-all ml-1"
                     >
                         <X className={iconConfig.sizes.xs} strokeWidth={iconConfig.strokeWidth} />
                     </div>

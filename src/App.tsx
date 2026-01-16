@@ -1,11 +1,13 @@
 import { Routes, Route } from 'react-router-dom';
 import MainLayout from './components/layout/MainLayout';
 import PageLayout from './components/layout/PageLayout';
+import ClientsPage from './pages/clients';
 
 function App() {
   return (
     <MainLayout>
       <Routes>
+        <Route path="/clients" element={<ClientsPage />} />
         <Route path="/" element={
           <PageLayout
             title="Aperçu du Tableau de Bord"
