@@ -6,7 +6,7 @@ import Button from './Button';
 interface ModalProps {
     isOpen: boolean;
     onClose: () => void;
-    title: string;
+    title?: string;
     description?: string;
     children: ReactNode;
     footer?: ReactNode;
@@ -85,9 +85,11 @@ export default function Modal({
                 {/* Header */}
                 <div className="px-6 sm:px-8 pt-2 sm:pt-8 pb-4 flex items-start justify-between gap-4">
                     <div className="flex flex-col gap-1">
-                        <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-main">
-                            {title}
-                        </h2>
+                        {title && (
+                            <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-main">
+                                {title}
+                            </h2>
+                        )}
                         {description && (
                             <p className="text-muted text-sm sm:text-base font-medium leading-relaxed">
                                 {description}
@@ -98,7 +100,7 @@ export default function Modal({
                         variant="ghost"
                         size="sm"
                         onClick={onClose}
-                        className="h-10 w-10 p-0 rounded-full bg-muted/5 hover:bg-muted/10 sm:flex hidden"
+                        className="h-10 w-10 p-0 rounded-full bg-muted/5 hover:bg-muted/10 flex items-center justify-center"
                     >
                         <X className={iconConfig.sizes.header} strokeWidth={iconConfig.strokeWidth} />
                     </Button>

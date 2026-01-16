@@ -4,14 +4,20 @@ import { iconConfig } from '../../../config/icons';
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
     size?: 'sm' | 'md' | 'lg';
+    fullWidth?: boolean;
     loading?: boolean;
     icon?: ReactNode;
     children: ReactNode;
 }
 
+/**
+ * BUTTON COMPONENT
+ * Premium button with smooth animations and theme-consistent styling.
+ */
 export default function Button({
     variant = 'primary',
     size = 'md',
+    fullWidth = false,
     loading = false,
     icon,
     children,
@@ -35,9 +41,11 @@ export default function Button({
         lg: "px-8 py-4 text-base gap-3"
     };
 
+    const widthClass = fullWidth ? 'w-full' : '';
+
     return (
         <button
-            className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`}
+            className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${widthClass} ${className}`}
             disabled={disabled || loading}
             {...props}
         >
@@ -48,7 +56,7 @@ export default function Button({
                 />
             ) : (
                 <>
-                    {icon}
+                    {icon && <span className="flex-shrink-0">{icon}</span>}
                     {children}
                 </>
             )}
