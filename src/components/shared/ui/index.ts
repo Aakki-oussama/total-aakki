@@ -15,3 +15,5 @@ export { default as DeleteConfirmationModal } from './DeleteConfirmationModal';
 export { default as EmptyState } from './EmptyState';
 export { default as SearchBar } from './SearchBar';
 export { default as TableActions } from './TableActions';
+export { default as Pagination } from './Pagination';
+export { default as PerPageSelector } from './PerPageSelector';
