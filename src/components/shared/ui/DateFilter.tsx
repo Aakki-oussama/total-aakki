@@ -61,7 +61,7 @@ export default function DateFilter({
                         onClick={handleClear}
                         className="ml-0 sm:ml-2 p-1 rounded-lg hover:bg-red-50 text-muted hover:text-red-500 transition-all"
                     >
-                        <X className="w-3.5 h-3.5" strokeWidth={iconConfig.strokeWidth} />
+                        <X className={iconConfig.sizes.xs} strokeWidth={iconConfig.strokeWidth} />
                     </div>
                 )}
             </Button>

@@ -11,6 +11,7 @@ export const iconConfig = {
         logoMobile: "w-4 h-4",
         emptyState: "w-10 h-10",
         actionButton: "h-9 w-9",
+        xs: "w-3.5 h-3.5",
     },
     transitions: "transition-all duration-300 ease-in-out",
 };
