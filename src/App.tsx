@@ -2,11 +2,15 @@ import { Routes, Route } from 'react-router-dom';
 import MainLayout from './components/layout/MainLayout';
 import PageLayout from './components/layout/PageLayout';
 import ClientsPage from './pages/clients';
+import SocietesPage from './pages/societes';
+import SocieteViewPage from './pages/societes/view';
 
 function App() {
   return (
     <MainLayout>
       <Routes>
+        <Route path="/societes" element={<SocietesPage />} />
+        <Route path="/societes/:id" element={<SocieteViewPage />} />
         <Route path="/clients" element={<ClientsPage />} />
         <Route path="/" element={
           <PageLayout

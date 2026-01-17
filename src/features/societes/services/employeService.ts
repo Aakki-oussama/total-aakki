@@ -1,25 +1,30 @@
 
 import { supabase } from '@/lib/supabase';
-import type { Client } from '@/types/tables';
+import type { Employe } from '@/types/tables';
 import { baseService } from '@/lib/supabase/baseService';
 
 /**
- * SERVICE: Clients
+ * SERVICE: Employes
  */
-export const clientService = {
-    async fetchClients(
+export const employeService = {
+    async fetchEmployes(
         page: number = 1,
         perPage: number = 10,
         searchTerm: string = '',
-        dateFilter: string = ''
+        dateFilter: string = '',
+        societeId?: string
     ) {
         const start = (page - 1) * perPage;
         const end = start + perPage - 1;
 
         let query = supabase
-            .from('client')
-            .select('*', { count: 'exact' })
+            .from('employe')
+            .select('*, societe(nom_societe)', { count: 'exact' })
             .is('deleted_at', null);
+
+        if (societeId) {
+            query = query.eq('societe_id', societeId);
+        }
 
         if (searchTerm.trim()) {
             query = query.or(`nom.ilike.%${searchTerm}%,prenom.ilike.%${searchTerm}%`);
@@ -38,17 +43,17 @@ export const clientService = {
 
         if (error) throw error;
         return {
-            items: data as Client[],
+            items: data as (Employe & { societe: { nom_societe: string } })[],
             totalCount: count || 0
         };
     },
 
-    createClient: (client: Omit<Client, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>) =>
-        baseService.create<Client>('client', client),
+    createEmploye: (employe: Omit<Employe, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>) =>
+        baseService.create<Employe>('employe', employe),
 
-    updateClient: (id: string, updates: Partial<Client>) =>
-        baseService.update<Client>('client', id, updates),
+    updateEmploye: (id: string, updates: Partial<Employe>) =>
+        baseService.update<Employe>('employe', id, updates),
 
-    deleteClient: (id: string) =>
-        baseService.softDelete('client', id)
+    deleteEmploye: (id: string) =>
+        baseService.softDelete('employe', id)
 };

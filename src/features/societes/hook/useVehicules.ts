@@ -1,17 +1,21 @@
 
-import type { Client } from '@/types/tables';
-import { clientService } from '../services/clientService';
+import { useMemo } from 'react';
+import type { Vehicule } from '@/types/tables';
+import { vehiculeService } from '../services/vehiculeService';
 import { useServerResource } from '@/lib/hooks/useServerResource';
 
+type VehiculeWithSociete = Vehicule & { societe: { nom_societe: string } };
+
 /**
- * HOOK: useClients
- * Centralise toute la logique métier avec pagination serveur.
- * Utilise le moteur générique useServerResource.
+ * HOOK: useVehicules
+ * Gère la logique métier pour les véhicules de la flotte.
  */
-export function useClients() {
+export function useVehicules(societeId?: string, enabled: boolean = true) {
+    const extraArgs = useMemo(() => [societeId], [societeId]);
+
     const {
-        items: clients,
-        totalCount: totalClients,
+        items,
+        totalCount: totalVehicules,
         loading,
         error,
         isSubmitting,
@@ -20,33 +24,27 @@ export function useClients() {
         modals,
         handleFormSubmit: genericSubmit,
         handleDelete: genericDelete
-    } = useServerResource<Client>(
-        clientService.fetchClients,
-        { entityName: 'Client' }
+    } = useServerResource<VehiculeWithSociete>(
+        vehiculeService.fetchVehicules,
+        { entityName: 'Véhicule', enabled },
+        extraArgs
     );
 
-    /**
-     * Spécificité pour la soumission du formulaire
-     */
-    const handleFormSubmit = async (formData: Omit<Client, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>) => {
+    const handleFormSubmit = async (formData: Omit<Vehicule, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>) => {
         const submitFn = modals.selectedItem
-            ? (data: typeof formData) => clientService.updateClient((modals.selectedItem as Client).id, data)
-            : clientService.createClient;
+            ? (data: typeof formData) => vehiculeService.updateVehicule((modals.selectedItem as Vehicule).id, data) as Promise<VehiculeWithSociete>
+            : (data: typeof formData) => vehiculeService.createVehicule(data) as Promise<VehiculeWithSociete>;
 
         await genericSubmit(submitFn, formData);
     };
 
-    /**
-     * Spécificité pour la suppression
-     */
     const handleDeleteConfirm = async () => {
-        await genericDelete(clientService.deleteClient);
+        await genericDelete(vehiculeService.deleteVehicule);
     };
 
     return {
-        // Data
-        clients,
-        totalClients,
+        vehicules: items,
+        totalVehicules,
         loading,
         error,
         isSubmitting,
@@ -58,7 +56,7 @@ export function useClients() {
         setCurrentPage: pagination.setCurrentPage,
         setPerPage: pagination.setPerPage,
 
-        // Filters
+        // Filtres
         searchTerm: filters.searchTerm,
         setSearchTerm: filters.setSearchTerm,
         selectedDate: filters.selectedDate,
@@ -67,7 +65,7 @@ export function useClients() {
         // Modals & Handlers
         isFormModalOpen: modals.isFormOpen,
         isDeleteModalOpen: modals.isDeleteOpen,
-        selectedClient: modals.selectedItem,
+        selectedVehicule: modals.selectedItem,
         openCreateModal: modals.openCreate,
         openEditModal: modals.openEdit,
         openDeleteModal: modals.openDelete,

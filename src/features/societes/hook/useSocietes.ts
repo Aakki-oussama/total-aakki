@@ -1,17 +1,17 @@
 
-import type { Client } from '@/types/tables';
-import { clientService } from '../services/clientService';
+import type { Societe } from '@/types/tables';
+import { societeService } from '../services/societeService';
 import { useServerResource } from '@/lib/hooks/useServerResource';
 
 /**
- * HOOK: useClients
- * Centralise toute la logique métier avec pagination serveur.
+ * HOOK: useSocietes
+ * Gestion de la logique métier pour les sociétés.
  * Utilise le moteur générique useServerResource.
  */
-export function useClients() {
+export function useSocietes() {
     const {
-        items: clients,
-        totalCount: totalClients,
+        items: societes,
+        totalCount: totalSocietes,
         loading,
         error,
         isSubmitting,
@@ -20,33 +20,30 @@ export function useClients() {
         modals,
         handleFormSubmit: genericSubmit,
         handleDelete: genericDelete
-    } = useServerResource<Client>(
-        clientService.fetchClients,
-        { entityName: 'Client' }
+    } = useServerResource<Societe>(
+        societeService.fetchSocietes,
+        { entityName: 'Société' }
     );
 
     /**
-     * Spécificité pour la soumission du formulaire
+     * Handlers CRUD avec logique spécifique (Triple-Action)
      */
-    const handleFormSubmit = async (formData: Omit<Client, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>) => {
+    const handleFormSubmit = async (formData: any) => {
+        // En édition, on ne modifie que le nom. En création, on utilise le triple-action.
         const submitFn = modals.selectedItem
-            ? (data: typeof formData) => clientService.updateClient((modals.selectedItem as Client).id, data)
-            : clientService.createClient;
+            ? (data: { nom_societe: string }) => societeService.updateSociete((modals.selectedItem as Societe).id, data)
+            : (data: Parameters<typeof societeService.createSocieteComplete>[0]) => societeService.createSocieteComplete(data);
 
-        await genericSubmit(submitFn, formData);
+        await genericSubmit(submitFn as any, formData); // On garde un petit cast ici car les deux signatures divergent trop pour la soumission générique
     };
 
-    /**
-     * Spécificité pour la suppression
-     */
     const handleDeleteConfirm = async () => {
-        await genericDelete(clientService.deleteClient);
+        await genericDelete(societeService.deleteSociete);
     };
 
     return {
-        // Data
-        clients,
-        totalClients,
+        societes,
+        totalSocietes,
         loading,
         error,
         isSubmitting,
@@ -58,7 +55,7 @@ export function useClients() {
         setCurrentPage: pagination.setCurrentPage,
         setPerPage: pagination.setPerPage,
 
-        // Filters
+        // Filtres
         searchTerm: filters.searchTerm,
         setSearchTerm: filters.setSearchTerm,
         selectedDate: filters.selectedDate,
@@ -67,7 +64,7 @@ export function useClients() {
         // Modals & Handlers
         isFormModalOpen: modals.isFormOpen,
         isDeleteModalOpen: modals.isDeleteOpen,
-        selectedClient: modals.selectedItem,
+        selectedSociete: modals.selectedItem,
         openCreateModal: modals.openCreate,
         openEditModal: modals.openEdit,
         openDeleteModal: modals.openDelete,
