@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { Client } from '@/types/tables';
 import { Button, Input } from '@/components/shared/ui';
+import { sanitize } from '@/lib/utils/sanitizers';
 
 interface ClientFormProps {
     initialData?: Client | null;
@@ -40,7 +41,11 @@ export default function ClientForm({
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
+
+        // Nettoyage en temps réel : On ne garde que les lettres
+        const cleanedValue = sanitize.alpha(value);
+
+        setFormData(prev => ({ ...prev, [name]: cleanedValue }));
         // Clear error when user types
         if (errors[name]) {
             setErrors(prev => {
