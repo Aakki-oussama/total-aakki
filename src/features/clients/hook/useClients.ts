@@ -1,16 +1,14 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { Client } from '@/types/tables';
 import { clientService } from '../services/clientService';
 import { useToast } from '@/context';
 import { useCrudModals } from '@/lib/hooks/useCrudModals';
-import { useSearch } from '@/lib/hooks/useSearch';
-import { useDateFilter } from '@/lib/hooks/useDateFilter';
+import { useDebounce } from '@/lib/hooks/useDebounce';
 import { mapSupabaseError } from '@/lib/supabase/error-handler';
 
 /**
  * HOOK: useClients
- * Centralise toute la logique métier pour la gestion des clients.
- * Gère le chargement, les actions CRUD et les états des modals.
+ * Centralise toute la logique métier avec pagination serveur.
  */
 export function useClients() {
     const { success, error: toastError } = useToast();
@@ -26,26 +24,42 @@ export function useClients() {
 
     // États des données
     const [clients, setClients] = useState<Client[]>([]);
+    const [totalCount, setTotalCount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // 1. Filtrage par date (Avant la recherche)
-    const { selectedDate, setSelectedDate, filteredData: dateFilteredClients } = useDateFilter(clients, 'created_at');
+    // Pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const [perPage, setPerPage] = useState(10);
 
-    // 2. Filtrage par recherche (Sur les résultats du filtre date)
-    const searchKeys = useMemo(() => ['nom', 'prenom'] as (keyof Client)[], []);
-    const { searchTerm, setSearchTerm, filteredData: filteredClients } = useSearch(dateFilteredClients, searchKeys);
+    // Recherche avec debounce
+    const [searchTerm, setSearchTerm] = useState('');
+    const debouncedSearchTerm = useDebounce(searchTerm, 300);
+
+    // Filtre par date (server-side)
+    const [selectedDate, setSelectedDate] = useState('');
+
+    // Calculer le nombre total de pages
+    const totalPages = Math.max(1, Math.ceil(totalCount / perPage));
 
     /**
-     * Charger les données au montage
+     * Charger les données depuis Supabase avec pagination serveur
      */
     const loadClients = useCallback(async () => {
         try {
             setLoading(true);
             setError(null);
-            const data = await clientService.fetchClients();
+
+            const { clients: data, totalCount: count } = await clientService.fetchClients(
+                currentPage,
+                perPage,
+                debouncedSearchTerm,
+                selectedDate
+            );
+
             setClients(data);
+            setTotalCount(count);
         } catch (err) {
             const translatedMsg = mapSupabaseError(err);
             setError(translatedMsg);
@@ -53,13 +67,17 @@ export function useClients() {
         } finally {
             setLoading(false);
         }
-    }, [toastError]);
+    }, [currentPage, perPage, debouncedSearchTerm, selectedDate, toastError]);
 
+    // Recharger quand page, perPage ou recherche change
     useEffect(() => {
         loadClients();
     }, [loadClients]);
 
-
+    // Reset à la page 1 quand la recherche ou perPage change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [debouncedSearchTerm, perPage, selectedDate]);
 
     /**
      * ACTIONS CRUD
@@ -68,11 +86,9 @@ export function useClients() {
         try {
             setIsSubmitting(true);
             if (selectedClient) {
-                // UPDATE
                 await clientService.updateClient(selectedClient.id, formData);
                 success('Client mis à jour avec succès');
             } else {
-                // CREATE
                 await clientService.createClient(formData);
                 success('Nouveau client créé avec succès');
             }
@@ -98,24 +114,34 @@ export function useClients() {
         } catch (err) {
             const translatedMsg = mapSupabaseError(err);
             toastError(translatedMsg);
-            setError(translatedMsg);
         } finally {
             setIsSubmitting(false);
         }
     };
 
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handlePerPageChange = (newPerPage: number) => {
+        setPerPage(newPerPage);
+    };
+
     return {
         // Data
-        clients: filteredClients, // Liste filtrée
-        totalClients: clients.length,
+        clients, // Données filtrées côté serveur
+        totalClients: totalCount,
         loading,
         error,
         isSubmitting,
 
-        // Modal State
-        isFormModalOpen,
-        isDeleteModalOpen,
-        selectedClient,
+        // Pagination (Server-Side)
+        currentPage,
+        perPage,
+        totalPages,
+        setCurrentPage: handlePageChange,
+        setPerPage: handlePerPageChange,
 
         // Search & Filter
         searchTerm,
@@ -123,7 +149,10 @@ export function useClients() {
         selectedDate,
         setSelectedDate,
 
-        // Handlers
+        // Handlers & Modals
+        isFormModalOpen,
+        isDeleteModalOpen,
+        selectedClient,
         openCreateModal,
         openEditModal,
         openDeleteModal,

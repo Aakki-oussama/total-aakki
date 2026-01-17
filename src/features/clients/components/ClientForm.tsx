@@ -53,8 +53,21 @@ export default function ClientForm({
 
     const validate = () => {
         const newErrors: Record<string, string> = {};
-        if (!formData.nom.trim()) newErrors.nom = 'Le nom est requis';
-        if (!formData.prenom.trim()) newErrors.prenom = 'Le prénom est requis';
+
+        // Validation du nom
+        if (!formData.nom.trim()) {
+            newErrors.nom = 'Le nom est requis';
+        } else if (formData.nom.trim().length < 2) {
+            newErrors.nom = 'Le nom doit contenir au moins 2 caractères';
+        }
+
+        // Validation du prénom
+        if (!formData.prenom.trim()) {
+            newErrors.prenom = 'Le prénom est requis';
+        } else if (formData.prenom.trim().length < 2) {
+            newErrors.prenom = 'Le prénom doit contenir au moins 2 caractères';
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };

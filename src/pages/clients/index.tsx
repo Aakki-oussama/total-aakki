@@ -2,7 +2,7 @@ import PageLayout from '@/components/layout/PageLayout';
 import { useClients } from '@/features/clients/hook/useClients';
 import ClientTable from '@/features/clients/components/ClientTable';
 import ClientForm from '@/features/clients/components/ClientForm';
-import { Modal, DeleteConfirmationModal, SearchBar, DateFilter } from '@/components/shared/ui';
+import { Modal, DeleteConfirmationModal, SearchBar, DateFilter, PaginatedTableFooter } from '@/components/shared/ui';
 
 /**
  * PAGE: Clients
@@ -26,7 +26,13 @@ export default function ClientsPage() {
         searchTerm,
         setSearchTerm,
         selectedDate,
-        setSelectedDate
+        setSelectedDate,
+        // Pagination
+        currentPage,
+        perPage,
+        totalPages,
+        setCurrentPage,
+        setPerPage
     } = useClients();
 
     return (
@@ -56,13 +62,29 @@ export default function ClientsPage() {
                     </div>
                 </div>
 
-                {/* Section Tableau */}
-                <ClientTable
-                    clients={clients}
-                    loading={loading}
-                    onEdit={openEditModal}
-                    onDelete={openDeleteModal}
-                />
+                {/* Section Tableau avec Pagination */}
+                <div className="border border-border rounded-2xl overflow-hidden bg-surface shadow-sm">
+                    <ClientTable
+                        clients={clients}
+                        loading={loading}
+                        onEdit={openEditModal}
+                        onDelete={openDeleteModal}
+                    />
+
+
+                    {/* Footer - Pagination réutilisable */}
+                    <PaginatedTableFooter
+                        loading={loading}
+                        itemCount={clients.length}
+                        currentPage={currentPage}
+                        perPage={perPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                        onPerPageChange={setPerPage}
+                        searchTerm={searchTerm}
+                        entityName="clients"
+                    />
+                </div>
             </div>
 
             {/* Modal de Formulaire (Ajout / Modification) */}

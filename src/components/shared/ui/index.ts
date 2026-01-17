@@ -17,3 +17,4 @@ export { default as SearchBar } from './SearchBar';
 export { default as TableActions } from './TableActions';
 export { default as Pagination } from './Pagination';
 export { default as PerPageSelector } from './PerPageSelector';
+export { default as PaginatedTableFooter } from './PaginatedTableFooter';

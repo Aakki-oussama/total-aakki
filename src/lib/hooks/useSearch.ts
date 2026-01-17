@@ -1,16 +1,33 @@
 import { useState, useMemo } from 'react';
+import { useDebounce } from './useDebounce';
 
 /**
  * HOOK: useSearch
- * Gère le filtrage instantané d'une liste de données en mémoire.
- * @param data La liste complète des données
- * @param searchKeys Les clés de l'objet sur lesquelles effectuer la recherche (ex: ['nom', 'prenom'])
+ * Gère le filtrage d'une liste avec debounce pour optimiser les performances.
+ * 
+ * @param data - La liste complète des données
+ * @param searchKeys - Les clés de l'objet sur lesquelles effectuer la recherche
+ * @param debounceDelay - Délai de debounce en ms (défaut: 300ms)
+ * 
+ * @example
+ * const { searchTerm, setSearchTerm, filteredData } = useSearch(
+ *     clients, 
+ *     ['nom', 'prenom'],
+ *     300
+ * );
  */
-export function useSearch<T>(data: T[], searchKeys: (keyof T)[]) {
+export function useSearch<T>(
+    data: T[],
+    searchKeys: (keyof T)[],
+    debounceDelay: number = 300
+) {
     const [searchTerm, setSearchTerm] = useState('');
 
+    // Debounce: Le filtre ne s'exécute que 300ms après la dernière frappe
+    const debouncedSearchTerm = useDebounce(searchTerm, debounceDelay);
+
     const filteredData = useMemo(() => {
-        const query = searchTerm.toLowerCase().trim();
+        const query = debouncedSearchTerm.toLowerCase().trim();
 
         if (!query) return data;
 
@@ -21,11 +38,12 @@ export function useSearch<T>(data: T[], searchKeys: (keyof T)[]) {
                 return String(value).toLowerCase().includes(query);
             });
         });
-    }, [data, searchTerm, searchKeys]);
+    }, [data, debouncedSearchTerm, searchKeys]);
 
     return {
-        searchTerm,
+        searchTerm,          // Valeur immédiate (pour l'input)
         setSearchTerm,
-        filteredData
+        filteredData,        // Données filtrées (avec debounce)
+        isSearching: searchTerm !== debouncedSearchTerm  // Indicateur de recherche en cours
     };
 }
