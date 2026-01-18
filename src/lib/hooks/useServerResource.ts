@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useToast } from '@/context';
 import { useCrudModals } from './useCrudModals';
 import { useDebounce } from './useDebounce';
@@ -10,12 +10,13 @@ interface FetchResponse<T> {
     totalCount: number;
 }
 
-type FetchFunction<T> = (
+// 🔧 FIX: Add generic TArgs for typesafe extra arguments
+type FetchFunction<T, TArgs extends unknown[] = []> = (
     page: number,
     perPage: number,
     searchTerm: string,
     dateFilter: string,
-    ...args: any[]
+    ...args: TArgs
 ) => Promise<FetchResponse<T>>;
 
 interface UseServerResourceOptions {
@@ -30,10 +31,10 @@ interface UseServerResourceOptions {
  * HOOK: useServerResource (Expert Edition)
  * Centralise : Pagination, Recherche (Debounce), Date, CRUD Modals, Lazy Loading et Optimistic Updates.
  */
-export function useServerResource<T extends { id?: string }>(
-    fetchFn: FetchFunction<T>,
+export function useServerResource<T extends { id?: string }, TArgs extends unknown[] = []>(
+    fetchFn: FetchFunction<T, TArgs>,
     options: UseServerResourceOptions = {},
-    extraFetchArgs: any[] = []
+    extraFetchArgs: TArgs = [] as unknown as TArgs
 ) {
     const {
         initialPerPage = 10,
@@ -62,6 +63,15 @@ export function useServerResource<T extends { id?: string }>(
 
     const totalPages = Math.max(1, Math.ceil(totalCount / perPage));
 
+    // 🔧 FIX: Use ref to store extraFetchArgs to avoid dependency array issues
+    // This prevents infinite re-renders when extraFetchArgs array reference changes
+    const extraFetchArgsRef = useRef(extraFetchArgs);
+
+    // Update ref when extraFetchArgs changes
+    useEffect(() => {
+        extraFetchArgsRef.current = extraFetchArgs;
+    }, [extraFetchArgs]);
+
     /**
      * Data Loading
      */
@@ -77,7 +87,7 @@ export function useServerResource<T extends { id?: string }>(
                 perPage,
                 debouncedSearchTerm,
                 selectedDate,
-                ...extraFetchArgs
+                ...extraFetchArgsRef.current  // 🔧 FIX: Use ref value
             );
 
             setData(items);
@@ -89,7 +99,7 @@ export function useServerResource<T extends { id?: string }>(
         } finally {
             setLoading(false);
         }
-    }, [enabled, currentPage, perPage, debouncedSearchTerm, selectedDate, fetchFn, toastError, ...extraFetchArgs]);
+    }, [enabled, currentPage, perPage, debouncedSearchTerm, selectedDate, fetchFn, toastError]);  // 🔧 FIX: Removed ...extraFetchArgs from dependency array
 
     useEffect(() => {
         if (currentPage !== 1 && (debouncedSearchTerm || perPage || selectedDate)) {
@@ -137,9 +147,12 @@ export function useServerResource<T extends { id?: string }>(
         }
     };
 
-    const handleDelete = async (deleteFn: (id: string) => Promise<any>) => {
+    const handleDelete = async (deleteFn: (id: string) => Promise<void>) => {
         if (!modals.selectedItem?.id) return;
+
+        // 🔧 FIX: Store both data AND totalCount for proper rollback
         const backupData = [...data];
+        const backupTotalCount = totalCount;  // Store the actual total count
         const targetId = modals.selectedItem.id;
 
         try {
@@ -155,9 +168,9 @@ export function useServerResource<T extends { id?: string }>(
             await loadData();
             modals.closeAll();
         } catch (err) {
-            // ROLLBACK
+            // 🔧 FIX: ROLLBACK - Restore both data and the correct total count
             setData(backupData);
-            setTotalCount(backupData.length);
+            setTotalCount(backupTotalCount);  // Restore actual total, not page length
             const translatedMsg = mapSupabaseError(err);
             toastError(translatedMsg);
         } finally {

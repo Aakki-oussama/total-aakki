@@ -1,5 +1,5 @@
 
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../context/theme/ThemeContext';
 import Breadcrumbs from './Breadcrumbs';
 import { Sun, Moon, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { currentUser } from '../../config/user';

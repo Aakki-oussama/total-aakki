@@ -5,11 +5,22 @@ import { supabase } from '@/lib/supabase';
  * BASE SERVICE: Generic Supabase CRUD
  * Centralise les opérations communes pour éviter la répétition.
  */
+
+// 🔧 FIX: Type helpers for better type safety
+// Payload for creating records (excludes auto-generated fields)
+type CreatePayload<T> = Omit<T, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>;
+
+// Payload for updating records (partial, excludes auto-generated fields)
+type UpdatePayload<T> = Partial<Omit<T, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>>;
+
 export const baseService = {
     /**
      * Create a new record
      */
-    async create<T>(table: string, payload: any): Promise<T> {
+    async create<T>(
+        table: string,
+        payload: CreatePayload<T> | Record<string, unknown>
+    ): Promise<T> {
         const { data, error } = await supabase
             .from(table)
             .insert([payload])
@@ -23,7 +34,11 @@ export const baseService = {
     /**
      * Update an existing record
      */
-    async update<T>(table: string, id: string, updates: any): Promise<T> {
+    async update<T>(
+        table: string,
+        id: string,
+        updates: UpdatePayload<T> | Record<string, unknown>
+    ): Promise<T> {
         const { data, error } = await supabase
             .from(table)
             .update(updates)

@@ -13,6 +13,7 @@ export const navItems: NavItem[] = [
         icon: LayoutDashboard,
         path: '/'
     },
+
     {
         id: 'clients',
         label: 'Clients',

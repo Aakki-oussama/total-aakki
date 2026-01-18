@@ -3,29 +3,10 @@
  * Système de notifications toast (success, error, info, warning)
  */
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { useState, useCallback, type ReactNode } from 'react';
 import { CheckCircle, XCircle, Info, AlertTriangle, X } from 'lucide-react';
 import { iconConfig } from '@/config/icons';
-
-type ToastType = 'success' | 'error' | 'info' | 'warning';
-
-interface Toast {
-    id: string;
-    type: ToastType;
-    message: string;
-    duration?: number;
-}
-
-interface ToastContextType {
-    toasts: Toast[];
-    success: (message: string, duration?: number) => void;
-    error: (message: string, duration?: number) => void;
-    info: (message: string, duration?: number) => void;
-    warning: (message: string, duration?: number) => void;
-    remove: (id: string) => void;
-}
-
-const ToastContext = createContext<ToastContextType | undefined>(undefined);
+import { ToastContext, type Toast, type ToastType } from '././useToast';
 
 export function ToastProvider({ children }: { children: ReactNode }) {
     const [toasts, setToasts] = useState<Toast[]>([]);
@@ -70,14 +51,6 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <ToastContainer toasts={toasts} onRemove={remove} />
         </ToastContext.Provider>
     );
-}
-
-export function useToast() {
-    const context = useContext(ToastContext);
-    if (!context) {
-        throw new Error('useToast must be used within ToastProvider');
-    }
-    return context;
 }
 
 // Composant Toast individuel

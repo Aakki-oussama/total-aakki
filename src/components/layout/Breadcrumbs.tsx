@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Home, ChevronRight } from 'lucide-react';
 import { Fragment } from 'react';
 import { iconConfig } from '../../config/icons';
-import { useResourceTitle } from '../../context/ResourceTitleContext';
+import { useResourceTitle } from '../../context/resource-title/ResourceTitleContext';
 
 const Breadcrumbs = () => {
     const location = useLocation();

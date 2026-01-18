@@ -1,26 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { Employe } from '@/types/tables';
 import { Button, Input } from '@/components/shared/ui';
 import { sanitize } from '@/lib/utils/sanitizers';
 
 interface EmployeFormProps {
-    /** Données initiales pour la modification */
     initialData?: Partial<Employe>;
-    /** Callback de soumission */
     onSubmit: (data: Omit<Employe, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>) => Promise<void>;
-    /** Callback d'annulation */
     onCancel: () => void;
-    /** État de soumission global */
     isSubmitting: boolean;
-    /** ID de la société (optionnel si utilisé dans le formulaire global) */
     societeId?: string;
 }
 
-/**
- * COMPONENT: EmployeForm
- * Formulaire atomique pour la gestion d'un employé.
- * Réutilisable dans le formulaire global Société ou dans un modal d'ajout rapide.
- */
 export default function EmployeForm({
     initialData,
     onSubmit,
@@ -28,33 +18,20 @@ export default function EmployeForm({
     isSubmitting,
     societeId
 }: EmployeFormProps) {
-    const [formData, setFormData] = useState({
-        nom: '',
-        prenom: '',
-        societe_id: societeId || ''
-    });
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [formData, setFormData] = useState(() => ({
+        nom: initialData?.nom ?? '',
+        prenom: initialData?.prenom ?? '',
+        societe_id: initialData?.societe_id ?? societeId ?? ''
+    }));
 
-    // Remplissage si modification
-    useEffect(() => {
-        if (initialData) {
-            setFormData({
-                nom: initialData.nom || '',
-                prenom: initialData.prenom || '',
-                societe_id: initialData.societe_id || societeId || ''
-            });
-        }
-    }, [initialData, societeId]);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
-
-        // Nettoyage en temps réel via l'utilitaire global
         const cleanedValue = sanitize.alpha(value);
 
         setFormData(prev => ({ ...prev, [name]: cleanedValue }));
 
-        // Clear error
         if (errors[name]) {
             setErrors(prev => {
                 const newErrors = { ...prev };
@@ -89,15 +66,11 @@ export default function EmployeForm({
         e.preventDefault();
         if (!validate()) return;
 
-        try {
-            await onSubmit({
-                ...formData,
-                nom: formData.nom.trim(),
-                prenom: formData.prenom.trim()
-            } as any);
-        } catch (error) {
-            console.error('EmployeForm submission error:', error);
-        }
+        await onSubmit({
+            ...formData,
+            nom: formData.nom.trim(),
+            prenom: formData.prenom.trim()
+        } as Omit<Employe, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>);
     };
 
     return (

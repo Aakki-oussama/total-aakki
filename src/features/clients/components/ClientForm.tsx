@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { Client } from '@/types/tables';
 import { Button, Input } from '@/components/shared/ui';
 import { sanitize } from '@/lib/utils/sanitizers';
@@ -20,24 +20,13 @@ export default function ClientForm({
     onCancel,
     isSubmitting
 }: ClientFormProps) {
-    const [formData, setFormData] = useState({
-        nom: '',
-        prenom: ''
-    });
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    // Lazy State Initialization
+    const [formData, setFormData] = useState(() => ({
+        nom: initialData?.nom ?? '',
+        prenom: initialData?.prenom ?? ''
+    }));
 
-    // Reset or Fill form when initialData changes
-    useEffect(() => {
-        if (initialData) {
-            setFormData({
-                nom: initialData.nom,
-                prenom: initialData.prenom
-            });
-        } else {
-            setFormData({ nom: '', prenom: '' });
-        }
-        setErrors({});
-    }, [initialData]);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -46,6 +35,7 @@ export default function ClientForm({
         const cleanedValue = sanitize.alpha(value);
 
         setFormData(prev => ({ ...prev, [name]: cleanedValue }));
+
         // Clear error when user types
         if (errors[name]) {
             setErrors(prev => {
@@ -81,12 +71,9 @@ export default function ClientForm({
         e.preventDefault();
         if (!validate()) return;
 
-        try {
-            await onSubmit(formData);
-        } catch (error) {
-            console.error('Form submission error:', error);
-            // Error handling is usually managed by the parent/hook (e.g., Toast)
-        }
+        // Error handling is managed by the parent hook (useServerResource)
+        // which displays toast notifications to the user
+        await onSubmit(formData);
     };
 
     return (

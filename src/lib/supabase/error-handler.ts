@@ -3,12 +3,19 @@
  * Traduit les codes d'erreur techniques de PostgreSQL/Supabase en messages humains.
  */
 
-export const mapSupabaseError = (error: any): string => {
+// 🔧 FIX: Use 'unknown' instead of 'any' for error parameter (best practice)
+export const mapSupabaseError = (error: unknown): string => {
     if (!error) return 'Une erreur inconnue est survenue.';
 
+    // Type narrowing: check if error is an object with code/status properties
+    if (typeof error !== 'object' || error === null) {
+        return 'Une erreur inconnue est survenue.';
+    }
+
     // Extraire le code (Postgres utilise souvent 'code', Supabase peut aussi utiliser d'autres champs)
-    const code = error.code || error.status;
-    const technicalMessage = error.message || '';
+    const errorObj = error as Record<string, unknown>;
+    const code = errorObj.code || errorObj.status;
+    const technicalMessage = (errorObj.message as string) || '';
 
     switch (code) {
         // Erreurs de contraintes (Unique, Foreign Key, etc.)
@@ -16,8 +23,11 @@ export const mapSupabaseError = (error: any): string => {
             return 'Cet enregistrement existe déjà dans la base de données.';
         case '23503':
             return 'Impossible de supprimer cet élément car il est lié à d\'autres données.';
-        case '23502':
-            return 'Certains champs obligatoires sont manquants.';
+        case '23502': {
+            const details = (errorObj.details as string) || (errorObj.message as string) || '';
+            const hint = (errorObj.hint as string) || '';
+            return `Certains champs obligatoires sont manquants. Détails: ${details} ${hint}`;
+        }
 
         // Erreurs d'authentification et de permissions
         case 'PGRST301':

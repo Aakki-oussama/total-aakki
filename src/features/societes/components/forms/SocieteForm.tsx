@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Building2 } from 'lucide-react';
 import { Button, Input } from '@/components/shared/ui';
 import type { Societe } from '@/types/tables';
@@ -19,29 +19,20 @@ interface SocieteFormProps {
     onCancel: () => void;
 }
 
-/**
- * COMPONENT: SocieteForm
- * Orchestre la création globale d'une société avec ses chauffeurs et camions.
- * Synchronisé avec les standards de validation de la section Clients.
- */
 export default function SocieteForm({ initialData, isSubmitting, onSubmit, onCancel }: SocieteFormProps) {
-    const [nomSociete, setNomSociete] = useState('');
-    const [employes, setEmployes] = useState<{ nom: string; prenom: string }[]>([]);
-    const [vehicules, setVehicules] = useState<{ matricule: string }[]>([]);
-    const [errors, setErrors] = useState<Record<string, string>>({});
+    // Lazy initialization
+    const [nomSociete, setNomSociete] = useState(() => initialData?.nom_societe ?? '');
 
-    useEffect(() => {
-        if (initialData) {
-            setNomSociete(initialData.nom_societe);
-            setEmployes([]);
-            setVehicules([]);
-        } else {
-            setNomSociete('');
-            setEmployes([{ nom: '', prenom: '' }]);
-            setVehicules([{ matricule: '' }]);
-        }
-        setErrors({});
-    }, [initialData]);
+    // Arrays: If editing (initialData exists), we start empty (since we don't edit details here usually).
+    // If creating, we start with 1 empty row.
+    const [employes, setEmployes] = useState<{ nom: string; prenom: string }[]>(() =>
+        initialData ? [] : [{ nom: '', prenom: '' }]
+    );
+    const [vehicules, setVehicules] = useState<{ matricule: string }[]>(() =>
+        initialData ? [] : [{ matricule: '' }]
+    );
+
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const handleNameChange = (val: string) => {
         setNomSociete(sanitize.alphanumeric(val));

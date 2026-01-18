@@ -2,6 +2,7 @@
 import { supabase } from '@/lib/supabase';
 import type { Client } from '@/types/tables';
 import { baseService } from '@/lib/supabase/baseService';
+import { applyDateFilter, getPaginationRange } from '@/lib/supabase/queryHelpers';
 
 /**
  * SERVICE: Clients
@@ -13,8 +14,7 @@ export const clientService = {
         searchTerm: string = '',
         dateFilter: string = ''
     ) {
-        const start = (page - 1) * perPage;
-        const end = start + perPage - 1;
+        const { start, end } = getPaginationRange(page, perPage);
 
         let query = supabase
             .from('client')
@@ -25,11 +25,7 @@ export const clientService = {
             query = query.or(`nom.ilike.%${searchTerm}%,prenom.ilike.%${searchTerm}%`);
         }
 
-        if (dateFilter.trim()) {
-            const startOfDay = `${dateFilter}T00:00:00`;
-            const endOfDay = `${dateFilter}T23:59:59`;
-            query = query.gte('created_at', startOfDay).lte('created_at', endOfDay);
-        }
+        query = applyDateFilter(query, dateFilter);
 
         const { data, error, count } = await query
             .order('nom', { ascending: true })

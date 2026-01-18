@@ -49,7 +49,7 @@ export default function ClientTable<T extends Client>({
                 />
             )
         }
-    ], [onEdit, onDelete]);
+    ], [onEdit, onDelete, onView]);
 
     return (
         <DataTable

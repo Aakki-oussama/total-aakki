@@ -19,7 +19,7 @@ import ViewTabs from './parts/ViewTabs';
 import ViewModals from './parts/ViewModals';
 import ViewToolbar from './parts/ViewToolbar';
 
-import { useResourceTitle } from '@/context/ResourceTitleContext';
+import { useResourceTitle } from '@/context';
 
 /**
  * COMPONENT: SocieteViewContainer (Refactorisé)
