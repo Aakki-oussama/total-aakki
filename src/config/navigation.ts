@@ -2,7 +2,8 @@
 import {
     LayoutDashboard,
     Users,
-    Building2
+    Building2,
+    Wallet
 } from 'lucide-react';
 import type { NavItem } from '../types';
 
@@ -25,5 +26,11 @@ export const navItems: NavItem[] = [
         label: 'Sociétés',
         icon: Building2,
         path: '/societes'
+    },
+    {
+        id: 'paiements',
+        label: 'Paiements',
+        icon: Wallet,
+        path: '/paiements'
     }
 ];

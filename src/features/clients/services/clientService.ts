@@ -18,7 +18,7 @@ export const clientService = {
 
         let query = supabase
             .from('client')
-            .select('*', { count: 'exact' })
+            .select('*, solde(solde_actuel, total_avances, total_gasoil)', { count: 'exact' })
             .is('deleted_at', null);
 
         if (searchTerm.trim()) {

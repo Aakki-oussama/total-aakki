@@ -1,12 +1,8 @@
 /**
- * TYPES DES TABLES
- * Correspondent exactement aux colonnes des tables PostgreSQL
+ * TYPES DES TABLES (V2)
+ * Correspondent aux tables : client, societe, employe, vehicule, avance, gasoil, solde
  */
 
-/**
- * Table: client
- * Description: Client simple (personne physique)
- */
 export interface Client {
     id: string;
     nom: string;
@@ -16,10 +12,6 @@ export interface Client {
     deleted_at: string | null;
 }
 
-/**
- * Table: societe
- * Description: Entreprise/Société
- */
 export interface Societe {
     id: string;
     nom_societe: string;
@@ -28,10 +20,6 @@ export interface Societe {
     deleted_at: string | null;
 }
 
-/**
- * Table: employe
- * Description: Employé d'une société
- */
 export interface Employe {
     id: string;
     societe_id: string;
@@ -42,10 +30,6 @@ export interface Employe {
     deleted_at: string | null;
 }
 
-/**
- * Table: vehicule
- * Description: Véhicule d'une société
- */
 export interface Vehicule {
     id: string;
     societe_id: string;
@@ -57,34 +41,49 @@ export interface Vehicule {
 
 /**
  * Table: avance
- * Description: Solde actuel d'un client ou d'une société
- * Note: Soit client_id, soit societe_id (jamais les deux)
+ * Description: Historique des paiements (Argent qui rentre)
  */
 export interface Avance {
     id: string;
     client_id: string | null;
     societe_id: string | null;
-    solde_actuel: number;
-    created_at: string;
-    updated_at: string;
-}
-
-/**
- * Table: transaction
- * Description: Historique complet des avances et crédits gasoil
- */
-export interface Transaction {
-    id: string;
-    avance_id: string;
-    type_transaction: 'AVANCE' | 'GASOIL';
     montant: number;
-    mode_paiement: 'CASH' | 'CHEQUE' | null;
+    mode_paiement: 'CASH' | 'CHEQUE';
     numero_cheque: string | null;
-    employe_id: string | null;
-    vehicule_id: string | null;
-    solde_apres: number; // ⚠️ Calculé AUTO par trigger
-    date_transaction: string;
+    date_avance: string;
     created_at: string;
     updated_at: string;
     deleted_at: string | null;
+}
+
+/**
+ * Table: gasoil
+ * Description: Historique des consommations (Argent qui sort)
+ */
+export interface Gasoil {
+    id: string;
+    client_id: string | null;
+    societe_id: string | null;
+    montant: number;
+    employe_id: string | null;
+    vehicule_id: string | null;
+    date_gasoil: string;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+}
+
+/**
+ * Table: solde
+ * Description: Résumé des soldes calculés
+ */
+export interface Solde {
+    id: string;
+    client_id: string | null;
+    societe_id: string | null;
+    total_avances: number;
+    total_gasoil: number;
+    solde_actuel: number;
+    created_at: string;
+    updated_at: string;
 }

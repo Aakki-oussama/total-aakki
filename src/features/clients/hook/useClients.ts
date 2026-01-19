@@ -40,7 +40,9 @@ export function useClients() {
      * Spécificité pour la suppression
      */
     const handleDeleteConfirm = async () => {
-        await genericDelete(clientService.deleteClient);
+        await genericDelete(async (id) => {
+            await clientService.deleteClient(id);
+        });
     };
 
     return {

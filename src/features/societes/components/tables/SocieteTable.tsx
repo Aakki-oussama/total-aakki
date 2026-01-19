@@ -10,10 +10,6 @@ interface SocieteTableProps {
     onDelete: (societe: Societe) => void;
 }
 
-/**
- * COMPONENT: SocieteTable
- * Tableau standardisé utilisant TableActions pour la cohérence UI.
- */
 export default function SocieteTable({
     societes,
     loading,

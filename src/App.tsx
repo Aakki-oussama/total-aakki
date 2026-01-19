@@ -8,6 +8,7 @@ import { Spinner } from '@/components/shared/ui'; // Import helper spinner
 const ClientsPage = lazy(() => import('./pages/clients'));
 const SocietesPage = lazy(() => import('./pages/societes'));
 const SocieteViewPage = lazy(() => import('./pages/societes/view'));
+const AvancesPage = lazy(() => import('./pages/transactions/avances'));
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/societes" element={<SocietesPage />} />
           <Route path="/societes/:id" element={<SocieteViewPage />} />
           <Route path="/clients" element={<ClientsPage />} />
+          <Route path="/paiements" element={<AvancesPage />} />
           <Route path="/" element={
             <PageLayout
               title="Aperçu du Tableau de Bord"

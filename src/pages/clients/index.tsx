@@ -88,20 +88,22 @@ export default function ClientsPage() {
             </div>
 
             {/* Modal de Formulaire (Ajout / Modification) */}
-            <Modal
-                isOpen={isFormModalOpen}
-                onClose={closeModals}
-                title={selectedClient ? 'Modifier le client' : 'Nouveau client'}
-                description={selectedClient ? 'Modifiez les informations personnelles du client.' : 'Remplissez les informations pour enregistrer un nouveau client.'}
-                size="md"
-            >
-                <ClientForm
-                    initialData={selectedClient}
-                    onSubmit={handleFormSubmit}
-                    onCancel={closeModals}
-                    isSubmitting={isSubmitting}
-                />
-            </Modal>
+            {isFormModalOpen && (
+                <Modal
+                    isOpen={isFormModalOpen}
+                    onClose={closeModals}
+                    title={selectedClient ? 'Modifier le client' : 'Nouveau client'}
+                    description={selectedClient ? 'Modifiez les informations personnelles du client.' : 'Remplissez les informations pour enregistrer un nouveau client.'}
+                    size="md"
+                >
+                    <ClientForm
+                        initialData={selectedClient}
+                        onSubmit={handleFormSubmit}
+                        onCancel={closeModals}
+                        isSubmitting={isSubmitting}
+                    />
+                </Modal>
+            )}
 
             {/* Modal de Confirmation de Suppression */}
             <DeleteConfirmationModal

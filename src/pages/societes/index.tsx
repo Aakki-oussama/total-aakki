@@ -98,20 +98,22 @@ export default function SocietesPage() {
             </div>
 
             {/* MODAL: Formulaire Triple-Action */}
-            <Modal
-                isOpen={isFormModalOpen}
-                onClose={closeModals}
-                title={selectedSociete ? 'Modifier la société' : 'Nouvelle société'}
-                description={selectedSociete ? 'Modifiez les informations de la société.' : 'Créez une nouvelle société avec ses chauffeurs et véhicules.'}
-                size="xl"
-            >
-                <SocieteForm
-                    initialData={selectedSociete}
-                    isSubmitting={isSubmitting}
-                    onSubmit={handleFormSubmit}
-                    onCancel={closeModals}
-                />
-            </Modal>
+            {isFormModalOpen && (
+                <Modal
+                    isOpen={isFormModalOpen}
+                    onClose={closeModals}
+                    title={selectedSociete ? 'Modifier la société' : 'Nouvelle société'}
+                    description={selectedSociete ? 'Modifiez les informations de la société.' : 'Créez une nouvelle société avec ses chauffeurs et véhicules.'}
+                    size="xl"
+                >
+                    <SocieteForm
+                        initialData={selectedSociete}
+                        isSubmitting={isSubmitting}
+                        onSubmit={handleFormSubmit}
+                        onCancel={closeModals}
+                    />
+                </Modal>
+            )}
 
             {/* MODAL: Confirmation de Suppression */}
             <DeleteConfirmationModal
