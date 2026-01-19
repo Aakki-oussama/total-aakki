@@ -28,7 +28,7 @@ export const societeService = {
         query = applyDateFilter(query, dateFilter);
 
         const { data, error, count } = await query
-            .order('nom_societe', { ascending: true })
+            .order('created_at', { ascending: false })
             .range(start, end);
 
         if (error) throw error;

@@ -1,10 +1,10 @@
 
-import { useTheme } from '../../context/theme/ThemeContext';
+import { useTheme } from '@/context';
 import Breadcrumbs from './Breadcrumbs';
 import { Sun, Moon, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import { currentUser } from '../../config/user';
-import { appConfig } from '../../config/app';
-import { iconConfig } from '../../config/icons';
+import { currentUser } from '@/config/user';
+import { appConfig } from '@/config/app';
+import { iconConfig } from '@/config/icons';
 
 interface HeaderProps {
     toggleSidebar: () => void;

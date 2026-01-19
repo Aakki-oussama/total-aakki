@@ -101,13 +101,15 @@ export function useServerResource<T extends { id?: string }, TArgs extends unkno
         }
     }, [enabled, currentPage, perPage, debouncedSearchTerm, selectedDate, fetchFn, toastError]);  // 🔧 FIX: Removed ...extraFetchArgs from dependency array
 
+    // 🔧 FIX: Reset to page 1 ONLY when filters change (not on every render)
     useEffect(() => {
-        if (currentPage !== 1 && (debouncedSearchTerm || perPage || selectedDate)) {
-            setCurrentPage(1);
-            return;
-        }
+        setCurrentPage(1);
+    }, [debouncedSearchTerm, perPage, selectedDate]);
+
+    // Load data when any parameter changes
+    useEffect(() => {
         loadData();
-    }, [currentPage, perPage, debouncedSearchTerm, selectedDate, loadData]);
+    }, [currentPage, debouncedSearchTerm, perPage, selectedDate, loadData]);
 
     /**
      * Handlers CRUD avec Optimistic Updates

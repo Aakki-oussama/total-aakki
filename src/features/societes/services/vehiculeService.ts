@@ -33,7 +33,7 @@ export const vehiculeService = {
         query = applyDateFilter(query, dateFilter);
 
         const { data, error, count } = await query
-            .order('matricule', { ascending: true })
+            .order('created_at', { ascending: false })
             .range(start, end);
 
         if (error) throw error;
