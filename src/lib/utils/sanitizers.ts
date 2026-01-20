@@ -19,7 +19,8 @@ export const sanitize = {
      * Idéal pour : Plaques d'immatriculation, Codes de référence.
      */
     alphanumeric: (val: string): string => {
-        return val.replace(/[^A-Za-z0-9]/g, '');
+        // Lettres, chiffres, accents, espaces, tirets et slashes
+        return val.replace(/[^A-Za-z0-9À-ÖØ-öø-ÿ\s\-/]/g, '');
     },
 
     /**

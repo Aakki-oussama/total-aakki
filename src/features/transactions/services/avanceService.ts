@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { baseService } from '@/lib/supabase/baseService';
 import type { Avance } from '@/types/tables';
-import { getPaginationRange } from '@/lib/supabase/queryHelpers';
+import { getPaginationRange, applyDateFilter } from '@/lib/supabase/queryHelpers';
 
 /**
  * Extended type for Avance with joined Client/Societe details
@@ -22,28 +22,35 @@ export const avanceService = {
     async fetchAvances(
         page: number = 1,
         perPage: number = 10,
-        /* eslint-disable @typescript-eslint/no-unused-vars */
-        _searchTerm: string = '',
-        _dateFilter: string = '',
-        /* eslint-enable @typescript-eslint/no-unused-vars */
+        searchTerm: string = '',
+        dateFilter: string = '',
         options: { clientId?: string; societeId?: string } = {}
     ) {
         const { start, end } = getPaginationRange(page, perPage);
 
         let query = supabase
-            .from('avance')
+            .from('liste_avances_recherchable')
             .select(`
                 *,
-                client(nom, prenom),
-                societe(nom_societe)
-            `, { count: 'exact' })
-            .is('deleted_at', null)
-            .order('date_avance', { ascending: false });
+                client:client_id(nom, prenom),
+                societe:societe_id(nom_societe)
+            `, { count: 'exact' });
 
+        // 1. Date Filtering
+        query = applyDateFilter(query, dateFilter, 'date_avance');
+
+        // 2. Search Logic (Super simple thanks to the View)
+        if (searchTerm.trim()) {
+            query = query.ilike('search_text', `%${searchTerm.trim()}%`);
+        }
+
+        // 3. Entity filtering
         if (options.clientId) query = query.eq('client_id', options.clientId);
         if (options.societeId) query = query.eq('societe_id', options.societeId);
 
-        const { data, error, count } = await query.range(start, end);
+        const { data, error, count } = await query
+            .order('date_avance', { ascending: false })
+            .range(start, end);
 
         if (error) throw error;
         return {

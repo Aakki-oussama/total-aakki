@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useServerResource } from '@/lib/hooks/useServerResource';
 import { avanceService, type AvanceWithDetails } from '../services/avanceService';
 import type { Avance } from '@/types/tables';
+import { useToast } from '@/context/toast/useToast';
 
 interface UseAvancesOptions {
     clientId?: string;
@@ -21,6 +22,7 @@ export function useAvances(options: UseAvancesOptions = {}) {
         societeId: options.societeId
     }], [options.clientId, options.societeId]);
 
+    const { success, error: toastError } = useToast();
     const {
         items: avances,
         totalCount: totalAvances,
@@ -31,7 +33,9 @@ export function useAvances(options: UseAvancesOptions = {}) {
         filters,
         modals,
         handleFormSubmit: genericSubmit,
-        handleDelete: genericDelete
+        handleDelete: genericDelete,
+        refresh,
+        setIsSubmitting
     } = useServerResource<AvanceWithDetails, [Partial<{ clientId: string; societeId: string }>]>(
         avanceService.fetchAvances,
         {
@@ -57,11 +61,33 @@ export function useAvances(options: UseAvancesOptions = {}) {
      * Specialized Quick Create (RPC)
      */
     const handleQuickCreateClient = async (payload: { nom: string; prenom: string; montant: number }) => {
-        return await avanceService.createClientWithAvance(payload.nom, payload.prenom, payload.montant);
+        setIsSubmitting(true);
+        try {
+            await avanceService.createClientWithAvance(payload.nom, payload.prenom, payload.montant);
+            success('Client et paiement créés avec succès');
+            refresh();
+            modals.closeAll();
+        } catch (err) {
+            const message = err instanceof Error ? err.message : 'Erreur lors de la création';
+            toastError(message);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleQuickCreateSociete = async (payload: { nom_societe: string; montant: number }) => {
-        return await avanceService.createSocieteWithAvance(payload.nom_societe, payload.montant);
+        setIsSubmitting(true);
+        try {
+            await avanceService.createSocieteWithAvance(payload.nom_societe, payload.montant);
+            success('Société et paiement créés avec succès');
+            refresh();
+            modals.closeAll();
+        } catch (err) {
+            const message = err instanceof Error ? err.message : 'Erreur lors de la création';
+            toastError(message);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     /**
