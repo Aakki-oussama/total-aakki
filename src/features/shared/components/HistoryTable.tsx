@@ -3,19 +3,19 @@ import { DataTable } from '@/components/shared/ui';
 import type { Column } from '@/components/shared/ui/DataTable';
 import type { HistoryItem } from '@/types/views';
 
-interface ClientHistoryTableProps {
+interface HistoryTableProps {
     history: HistoryItem[];
     loading?: boolean;
+    entityName?: string;
 }
 
 /**
- * COMPONENT: ClientHistoryTable
+ * COMPONENT: HistoryTable
  * Affiche le relevé de compte complet (gasoil + paiements) 
- * Utilisant notre composant DataTable standard.
+ * Utilisable pour les Clients comme pour les Sociétés.
  */
-export default function ClientHistoryTable({ history, loading }: ClientHistoryTableProps) {
+export default function HistoryTable({ history, loading, entityName = 'ce bénéficiaire' }: HistoryTableProps) {
 
-    // Définition des colonnes pour le DataTable
     const columns: Column<HistoryItem>[] = [
         {
             header: 'Date',
@@ -85,7 +85,7 @@ export default function ClientHistoryTable({ history, loading }: ClientHistoryTa
             <ArrowRightLeft className="mx-auto h-12 w-12 text-muted/30 mb-4" />
             <h3 className="text-xl font-bold text-main">Aucun historique</h3>
             <p className="text-muted max-w-sm mx-auto mt-2 text-sm">
-                Aucune transaction (Gasoil ou Paiement) n'a été enregistrée pour ce client.
+                Aucune transaction (Gasoil ou Paiement) n'a été enregistrée pour {entityName}.
             </p>
         </div>
     );

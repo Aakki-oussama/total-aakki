@@ -26,27 +26,21 @@ export function useSocietes() {
     );
 
     /**
-     * Handlers CRUD avec logique spécifique (Triple-Action)
+     * Handlers CRUD
      */
-    // Define proper types for form data
-    type CreatePayload = Parameters<typeof societeService.createSocieteComplete>[0];
-    type UpdatePayload = { nom_societe: string };
-
-    const handleFormSubmit = async (formData: CreatePayload | UpdatePayload) => {
+    const handleFormSubmit = async (formData: { nom_societe: string }) => {
         if (modals.selectedItem) {
-            // EDIT MODE: Update only name
-            const updateFn = (data: UpdatePayload) =>
+            // EDIT MODE
+            const updateFn = (data: { nom_societe: string }) =>
                 societeService.updateSociete((modals.selectedItem as Societe).id, data);
 
-            // We need to narrow the type or cast specifically, avoiding 'any'
-            // Since we know we are in edit mode, formData should conform to UpdatePayload
-            await genericSubmit(updateFn, formData as UpdatePayload);
+            await genericSubmit(updateFn, formData);
         } else {
-            // CREATE MODE: Complete creation (Societe + Employes + Vehicules)
-            const createFn = (data: CreatePayload) =>
-                societeService.createSocieteComplete(data);
+            // CREATE MODE
+            const createFn = (data: { nom_societe: string }) =>
+                societeService.createSociete(data);
 
-            await genericSubmit(createFn, formData as CreatePayload);
+            await genericSubmit(createFn, formData);
         }
     };
 

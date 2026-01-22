@@ -4,34 +4,19 @@ import { Button, Input } from '@/components/shared/ui';
 import type { Societe } from '@/types/tables';
 import { sanitize } from '@/lib/utils/sanitizers';
 
-// Import des sous-sections
-import EmployeSection from './parts/EmployeSection';
-import VehiculeSection from './parts/VehiculeSection';
-
 interface SocieteFormProps {
     initialData?: Societe | null;
     isSubmitting: boolean;
-    onSubmit: (data: {
-        nom_societe: string;
-        employes: { nom: string; prenom: string }[];
-        vehicules: { matricule: string }[];
-    }) => Promise<void>;
+    onSubmit: (data: { nom_societe: string }) => Promise<void>;
     onCancel: () => void;
 }
 
+/**
+ * COMPONENT: SocieteForm
+ * Formulaire pour créer ou modifier une société.
+ */
 export default function SocieteForm({ initialData, isSubmitting, onSubmit, onCancel }: SocieteFormProps) {
-    // Lazy initialization
     const [nomSociete, setNomSociete] = useState(() => initialData?.nom_societe ?? '');
-
-    // Arrays: If editing (initialData exists), we start empty (since we don't edit details here usually).
-    // If creating, we start with 1 empty row.
-    const [employes, setEmployes] = useState<{ nom: string; prenom: string }[]>(() =>
-        initialData ? [] : [{ nom: '', prenom: '' }]
-    );
-    const [vehicules, setVehicules] = useState<{ matricule: string }[]>(() =>
-        initialData ? [] : [{ matricule: '' }]
-    );
-
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const handleNameChange = (val: string) => {
@@ -63,18 +48,13 @@ export default function SocieteForm({ initialData, isSubmitting, onSubmit, onCan
         e.preventDefault();
         if (!validate()) return;
 
-        // On ne garde que les lignes qui ont des données
-        const finalData = {
-            nom_societe: nomSociete.trim(),
-            employes: employes.filter(emp => emp.nom.trim() || emp.prenom.trim()),
-            vehicules: vehicules.filter(veh => veh.matricule.trim())
-        };
-
-        await onSubmit(finalData);
+        await onSubmit({
+            nom_societe: nomSociete.trim()
+        });
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-8" noValidate>
+        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
             {/* 1. Informations Société */}
             <div className="bg-muted/5 p-5 rounded-xl border border-border">
                 <div className="flex items-center gap-2 mb-4 text-primary font-semibold">
@@ -92,28 +72,13 @@ export default function SocieteForm({ initialData, isSubmitting, onSubmit, onCan
                 />
             </div>
 
-            {/* 2. Sections Dynamiques (Seulement en création pour le bulk) */}
-            {!initialData && (
-                <div className="space-y-10">
-                    <EmployeSection
-                        employes={employes}
-                        onChange={setEmployes}
-                    />
-
-                    <VehiculeSection
-                        vehicules={vehicules}
-                        onChange={setVehicules}
-                    />
-                </div>
-            )}
-
             {/* Actions */}
             <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-6 border-t border-border">
                 <Button type="button" variant="ghost" onClick={onCancel} disabled={isSubmitting}>
                     Annuler
                 </Button>
                 <Button type="submit" variant="primary" loading={isSubmitting}>
-                    {initialData ? 'Enregistrer les modifications' : 'Créer la Société et son Équipe'}
+                    {initialData ? 'Enregistrer les modifications' : 'Créer la Société'}
                 </Button>
             </div>
         </form>

@@ -3,8 +3,6 @@ import PaiementTypeSelector from './PaiementTypeSelector';
 import type { Gasoil } from '@/types/tables';
 import type { GasoilWithDetails } from '../services/gasoilService';
 import { useGasoilForm } from '../hooks/useGasoilForm';
-import { iconConfig } from '@/config/icons';
-import { Truck, UserCircle } from 'lucide-react';
 
 interface GasoilFormProps {
     isOpen: boolean;
@@ -57,39 +55,7 @@ export default function GasoilForm({
                     />
                 </div>
 
-                {/* 3. Détails spécifiques si c'est une Société (Visible uniquement si une société est sélectionnée) */}
-                {form.type === 'SOCIETE' && form.entityId && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-blue-50/30 rounded-xl border border-blue-100/50 animate-in fade-in zoom-in duration-300">
-                        <SearchSelect
-                            label={
-                                <span className="inline-flex items-center gap-1.5 text-blue-700">
-                                    <UserCircle className={iconConfig.sizes.xs} /> Chauffeur
-                                </span>
-                            }
-                            options={form.employeOptions}
-                            value={form.employeId}
-                            onChange={form.setEmployeId}
-                            isLoading={form.loadingDetails}
-                            placeholder="Chauffeur..."
-                            required
-                        />
-                        <SearchSelect
-                            label={
-                                <span className="inline-flex items-center gap-1.5 text-blue-700">
-                                    <Truck className={iconConfig.sizes.xs} /> Véhicule
-                                </span>
-                            }
-                            options={form.vehiculeOptions}
-                            value={form.vehiculeId}
-                            onChange={form.setVehiculeId}
-                            isLoading={form.loadingDetails}
-                            placeholder="Immatriculation..."
-                            required
-                        />
-                    </div>
-                )}
-
-                {/* 4. Détails Financiers & Date */}
+                {/* 3. Détails Financiers & Date */}
                 <div className="grid grid-cols-2 gap-3">
                     <Input
                         label="Montant (DH)"
@@ -110,7 +76,7 @@ export default function GasoilForm({
                     />
                 </div>
 
-                {/* 5. Actions */}
+                {/* 4. Actions */}
                 <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 border-t border-border mt-6">
                     <Button
                         variant="ghost"
@@ -124,7 +90,6 @@ export default function GasoilForm({
                         variant="primary"
                         type="submit"
                         loading={isSubmitting}
-                        disabled={form.type === 'SOCIETE' && (!form.employeId || !form.vehiculeId)}
                     >
                         {initialData ? 'Mettre à jour' : 'Enregistrer Gasoil'}
                     </Button>

@@ -3,15 +3,13 @@
  * Types dérivés pour la création et modification des entités
  */
 
-import type { Client, Societe, Employe, Vehicule } from './tables';
+import type { Client, Societe } from './tables';
 
 /**
  * Formulaires de création (sans id, created_at, etc.)
  */
 export type ClientFormData = Pick<Client, 'nom' | 'prenom'>;
 export type SocieteFormData = Pick<Societe, 'nom_societe'>;
-export type EmployeFormData = Pick<Employe, 'societe_id' | 'nom' | 'prenom'>;
-export type VehiculeFormData = Pick<Vehicule, 'societe_id' | 'matricule'>;
 
 /**
  * Formulaire pour une transaction AVANCE
@@ -32,8 +30,6 @@ export interface TransactionGasoilFormData {
     avance_id: string;
     type_transaction: 'GASOIL';
     montant: number; // Négatif
-    employe_id?: string; // Pour les sociétés
-    vehicule_id?: string; // Pour les sociétés
     date_transaction?: string;
 }
 

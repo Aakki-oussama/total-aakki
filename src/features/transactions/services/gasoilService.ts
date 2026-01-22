@@ -4,13 +4,11 @@ import { getPaginationRange, applyDateFilter } from '@/lib/supabase/queryHelpers
 import type { Gasoil } from '@/types/tables';
 
 /**
- * Extended type for Gasoil with all joined details
+ * Extended type for Gasoil with essential profile details
  */
 export type GasoilWithDetails = Gasoil & {
     client: { nom: string; prenom: string } | null;
     societe: { nom_societe: string } | null;
-    employe: { nom: string; prenom: string } | null;
-    vehicule: { matricule: string } | null;
 };
 
 /**
@@ -19,7 +17,7 @@ export type GasoilWithDetails = Gasoil & {
  */
 export const gasoilService = {
     /**
-     * Récupère la liste paginée des consommations de gasoil avec jointures complètes.
+     * Récupère la liste paginée des consommations de gasoil.
      */
     async fetchGasoils(
         page: number = 1,
@@ -30,21 +28,18 @@ export const gasoilService = {
     ) {
         const { start, end } = getPaginationRange(page, perPage);
 
-        // Utilisation de la VUE RECHERCHABLE pour éviter le bug "logic tree"
         let query = supabase
             .from('liste_gasoil_recherchable')
             .select(`
                 *,
                 client:client_id(nom, prenom),
-                societe:societe_id(nom_societe),
-                employe:employe_id(nom, prenom),
-                vehicule:vehicule_id(matricule)
+                societe:societe_id(nom_societe)
             `, { count: 'exact' });
 
         // 1. Filtrage par date
         query = applyDateFilter(query, dateFilter, 'date_gasoil');
 
-        // 2. Logique de recherche ultra simple sur la colonne search_text de la vue
+        // 2. Logique de recherche simple
         if (searchTerm.trim()) {
             query = query.ilike('search_text', `%${searchTerm.trim().toLowerCase()}%`);
         }
@@ -77,7 +72,7 @@ export const gasoilService = {
         baseService.update<Gasoil>('gasoil', id, updates),
 
     /**
-     * Suppression (Soft Delete) via fonction SQL pour recalculer le solde
+     * Suppression (Soft Delete)
      */
     deleteGasoil: async (id: string) => {
         const { error } = await supabase.rpc('soft_delete_gasoil', { p_gasoil_id: id });

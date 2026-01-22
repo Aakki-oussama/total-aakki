@@ -1,6 +1,6 @@
 /**
  * TYPES DES TABLES (V2)
- * Correspondent aux tables : client, societe, employe, vehicule, avance, gasoil, solde
+ * Correspondent aux tables : client, societe, avance, gasoil, solde
  */
 
 export interface Client {
@@ -15,25 +15,6 @@ export interface Client {
 export interface Societe {
     id: string;
     nom_societe: string;
-    created_at: string;
-    updated_at: string;
-    deleted_at: string | null;
-}
-
-export interface Employe {
-    id: string;
-    societe_id: string;
-    nom: string;
-    prenom: string;
-    created_at: string;
-    updated_at: string;
-    deleted_at: string | null;
-}
-
-export interface Vehicule {
-    id: string;
-    societe_id: string;
-    matricule: string;
     created_at: string;
     updated_at: string;
     deleted_at: string | null;
@@ -65,8 +46,6 @@ export interface Gasoil {
     client_id: string | null;
     societe_id: string | null;
     montant: number;
-    employe_id: string | null;
-    vehicule_id: string | null;
     date_gasoil: string;
     created_at: string;
     updated_at: string;

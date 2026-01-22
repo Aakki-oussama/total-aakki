@@ -1,8 +1,6 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useClients } from '@/features/clients/hook/useClients';
 import { useSocietes } from '@/features/societes/hook/useSocietes';
-import { employeService } from '@/features/societes/services/employeService';
-import { vehiculeService } from '@/features/societes/services/vehiculeService';
 import type { Gasoil } from '@/types/tables';
 import type { GasoilWithDetails } from '../services/gasoilService';
 
@@ -14,9 +12,8 @@ interface UseGasoilFormProps {
 
 /**
  * HOOK: useGasoilForm
- * Gère l'état complexe du formulaire Gasoil :
- * - Bascule entre Client et Société
- * - Chargement dynamique des chauffeurs/véhicules si Société sélectionnée
+ * Gère l'état simplifié du formulaire Gasoil :
+ * - Bascule entre Client et Société uniquement
  */
 export function useGasoilForm({ initialData, onClose, onSubmit }: UseGasoilFormProps) {
     // 1. ÉTAT DE BASE
@@ -31,45 +28,11 @@ export function useGasoilForm({ initialData, onClose, onSubmit }: UseGasoilFormP
         initialData?.date_gasoil?.split('T')[0] || new Date().toISOString().split('T')[0]
     );
 
-    // ÉTATS SPÉCIFIQUES SOCIÉTÉ
-    const [employeId, setEmployeId] = useState(initialData?.employe_id || '');
-    const [vehiculeId, setVehiculeId] = useState(initialData?.vehicule_id || '');
-
-    // Listes dynamiques pour sociétés
-    const [employes, setEmployes] = useState<{ id: string, nom: string, prenom: string }[]>([]);
-    const [vehicules, setVehicules] = useState<{ id: string, matricule: string }[]>([]);
-    const [loadingDetails, setLoadingDetails] = useState(false);
-
     // 2. FETCH DATA (LISTES PRINCIPALES)
     const { clients, loading: loadingClients } = useClients();
     const { societes, loading: loadingSocietes } = useSocietes();
 
-    // 3. CHARGEMENT DYNAMIQUE (DÉTAILS SOCIÉTÉ)
-    useEffect(() => {
-        if (type === 'SOCIETE' && entityId) {
-            const fetchSocieteDetails = async () => {
-                setLoadingDetails(true);
-                try {
-                    const [empRes, vehRes] = await Promise.all([
-                        employeService.fetchEmployes(1, 100, '', '', entityId),
-                        vehiculeService.fetchVehicules(1, 100, '', '', entityId)
-                    ]);
-                    setEmployes(empRes.items);
-                    setVehicules(vehRes.items);
-                } catch (error) {
-                    console.error('Erreur lors du chargement des détails société:', error);
-                } finally {
-                    setLoadingDetails(false);
-                }
-            };
-            fetchSocieteDetails();
-        } else {
-            setEmployes([]);
-            setVehicules([]);
-        }
-    }, [type, entityId]);
-
-    // 4. PRÉPARATION DES OPTIONS POUR LES SELECTS
+    // 3. PRÉPARATION DES OPTIONS
     const entityOptions = useMemo(() => {
         if (type === 'CLIENT') {
             return clients.map(c => ({ value: c.id, label: `${c.nom} ${c.prenom}` }));
@@ -77,15 +40,7 @@ export function useGasoilForm({ initialData, onClose, onSubmit }: UseGasoilFormP
         return societes.map(s => ({ value: s.id, label: s.nom_societe }));
     }, [type, clients, societes]);
 
-    const employeOptions = useMemo(() =>
-        employes.map(e => ({ value: e.id, label: `${e.nom} ${e.prenom}` }))
-        , [employes]);
-
-    const vehiculeOptions = useMemo(() =>
-        vehicules.map(v => ({ value: v.id, label: v.matricule }))
-        , [vehicules]);
-
-    // 5. HANDLERS
+    // 4. HANDLERS
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -101,8 +56,6 @@ export function useGasoilForm({ initialData, onClose, onSubmit }: UseGasoilFormP
                 date_gasoil: dateGasoil,
                 client_id: type === 'CLIENT' ? (entityId || null) : null,
                 societe_id: type === 'SOCIETE' ? (entityId || null) : null,
-                employe_id: type === 'SOCIETE' ? (employeId || null) : null,
-                vehicule_id: type === 'SOCIETE' ? (vehiculeId || null) : null,
             };
 
             await onSubmit(payload);
@@ -114,7 +67,6 @@ export function useGasoilForm({ initialData, onClose, onSubmit }: UseGasoilFormP
     };
 
     return {
-        // État
         type,
         setType,
         entityId,
@@ -123,19 +75,8 @@ export function useGasoilForm({ initialData, onClose, onSubmit }: UseGasoilFormP
         setMontant,
         dateGasoil,
         setDateGasoil,
-        employeId,
-        setEmployeId,
-        vehiculeId,
-        setVehiculeId,
-
-        // Options & Loading
         entityOptions,
-        employeOptions,
-        vehiculeOptions,
         loadingEntities: type === 'CLIENT' ? loadingClients : loadingSocietes,
-        loadingDetails,
-
-        // Handlers
         handleSubmit
     };
 }

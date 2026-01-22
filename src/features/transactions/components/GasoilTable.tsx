@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { Fuel, User, Building2 } from 'lucide-react';
-import { DataTable, TableActions, Badge } from '@/components/shared/ui';
+import { DataTable, TableActions } from '@/components/shared/ui';
 import type { GasoilWithDetails } from '../services/gasoilService';
 import { iconConfig } from '@/config/icons';
 
@@ -13,7 +13,7 @@ interface GasoilTableProps {
 
 /**
  * COMPONENT: GasoilTable
- * Displays the list of fuel consumption entries with rich details.
+ * Affiche la liste des consommations de gasoil (simplifié sans logistique).
  */
 export function GasoilTable({ data, loading, onEdit, onDelete }: GasoilTableProps) {
     const columns = useMemo(() => [
@@ -56,27 +56,6 @@ export function GasoilTable({ data, loading, onEdit, onDelete }: GasoilTableProp
                     )}
                 </div>
             )
-        },
-        {
-            header: 'Logistique',
-            render: (item: GasoilWithDetails) => {
-                if (!item.societe_id) return (
-                    <div className="text-main/40 pl-2 font-mono tracking-widest font-bold">
-                        ---
-                    </div>
-                );
-
-                return (
-                    <div className="flex flex-col gap-1.5 text-left items-start">
-                        <Badge variant="info" size="sm">
-                            {item.employe?.nom} {item.employe?.prenom}
-                        </Badge>
-                        <Badge variant="neutral" size="sm">
-                            <span className="font-mono text-[10px]">{item.vehicule?.matricule}</span>
-                        </Badge>
-                    </div>
-                );
-            }
         },
         {
             header: 'Montant',

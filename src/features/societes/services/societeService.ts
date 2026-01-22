@@ -1,4 +1,3 @@
-
 import { supabase } from '@/lib/supabase';
 import type { Societe } from '@/types/tables';
 import { baseService } from '@/lib/supabase/baseService';
@@ -41,21 +40,6 @@ export const societeService = {
 
     createSociete: (societe: Omit<Societe, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>) =>
         baseService.create<Societe>('societe', societe),
-
-    async createSocieteComplete(payload: {
-        nom_societe: string;
-        employes: { nom: string; prenom: string }[];
-        vehicules: { matricule: string }[];
-    }) {
-        const { data, error } = await supabase.rpc('create_societe_complete', {
-            p_nom_societe: payload.nom_societe,
-            p_employes: payload.employes,
-            p_vehicules: payload.vehicules
-        });
-
-        if (error) throw error;
-        return data as Societe;
-    },
 
     updateSociete: (id: string, updates: Partial<Societe>) =>
         baseService.update<Societe>('societe', id, updates),

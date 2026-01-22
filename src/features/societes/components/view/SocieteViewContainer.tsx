@@ -1,160 +1,108 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
-import { Spinner, PaginatedTableFooter } from '@/components/shared/ui';
-import { societeService } from '@/features/societes/services/societeService';
-import type { Societe } from '@/types/tables';
-
-// Hooks
-import { useEmployes } from '@/features/societes/hook/useEmployes';
-import { useVehicules } from '@/features/societes/hook/useVehicules';
-
-// Composants Tableaux
-import EmployeTable from '@/features/societes/components/tables/EmployeTable';
-import VehiculeTable from '@/features/societes/components/tables/VehiculeTable';
-
-// Parts
-import ViewHeader from './parts/ViewHeader';
-import ViewTabs from './parts/ViewTabs';
-import ViewModals from './parts/ViewModals';
-import ViewToolbar from './parts/ViewToolbar';
-
-import { useResourceTitle } from '@/context';
+import SocieteIdentityHeader from '../SocieteIdentityHeader';
+import SocieteStats from '../SocieteStats';
+import HistoryTable from '@/features/shared/components/HistoryTable';
+import { useSocieteDetails } from '../../hook/useSocieteDetails';
+import { useSocieteHistory } from '../../hook/useSocieteHistory';
+import { Spinner, SearchBar, DateFilter, PaginatedTableFooter } from '@/components/shared/ui';
+import HistoryExport from '@/features/shared/components/HistoryExport';
 
 /**
- * COMPONENT: SocieteViewContainer (Refactorisé)
- * Gère la logique de filtrage, recherche et pagination pour les deux types de données.
+ * COMPONENT: SocieteViewContainer
+ * Affiche l'identité de la société, ses stats financières et son historique.
  */
 export default function SocieteViewContainer() {
     const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate();
-    const { setResourceTitle } = useResourceTitle();
-    const [societe, setSociete] = useState<Societe | null>(null);
-    const [loadingSociete, setLoadingSociete] = useState(true);
-    const [activeTab, setActiveTab] = useState<'employes' | 'vehicules'>('employes');
+    const { societe, loading: loadingSociete } = useSocieteDetails(id);
+    const {
+        history,
+        loading: loadingHistory,
+        page,
+        perPage,
+        searchTerm,
+        dateFilter,
+        totalPages,
+        setPage,
+        setPerPage,
+        setSearchTerm,
+        setDateFilter
+    } = useSocieteHistory(id);
 
-    // 1. Logique Employés (Lazy loading si onglet actif)
-    const empHook = useEmployes(id, activeTab === 'employes');
-
-    // 2. Logique Véhicules (Lazy loading si onglet actif)
-    const vehHook = useVehicules(id, activeTab === 'vehicules');
-
-    // Charger les infos de la société
-    useEffect(() => {
-        if (!id) return;
-        societeService.getSocieteById(id)
-            .then(data => {
-                setSociete(data);
-                if (data) setResourceTitle(id, data.nom_societe);
-            })
-            .catch(() => navigate('/societes'))
-            .finally(() => setLoadingSociete(false));
-    }, [id, navigate, setResourceTitle]);
-
-    if (loadingSociete) return (
-        <div className="h-[60vh] flex items-center justify-center">
-            <Spinner size="lg" />
-        </div>
-    );
-
-    if (!societe) return null;
+    if (loadingSociete) {
+        return (
+            <div className="flex justify-center items-center h-[70vh]">
+                <Spinner size="lg" />
+            </div>
+        );
+    }
 
     return (
-        <PageLayout
-            title={societe.nom_societe}
-            description="Consultez et gérez les informations de l'entreprise, le personnel et la flotte."
-            variant="content"
-            onAdd={activeTab === 'employes' ? empHook.openCreateModal : vehHook.openCreateModal}
-        >
-            <div className="flex flex-col gap-4 sm:gap-6">
-                {/* 1. Navigation & Tabs */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-center">
-                        <ViewHeader />
+        <PageLayout variant="content" title="" description="">
+            <div className="space-y-8 -mt-8">
+                {/* 1. Header d'identité */}
+                <SocieteIdentityHeader
+                    societe={societe ? { nom_societe: societe.nom_societe } : undefined}
+                />
+
+                {/* 2. Cartes de Statistiques Financières */}
+                <SocieteStats
+                    solde={societe?.solde || { solde_actuel: 0, total_avances: 0, total_gasoil: 0 }}
+                    totalTransactions={societe?.total_transactions || 0}
+                />
+
+                {/* 3. Relevé de compte chronologique */}
+                <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <h2 className="text-xl font-black text-main">
+                            Historique des Opérations
+                        </h2>
+
+                        {/* Barre d'outils */}
+                        <div className="flex items-center gap-2">
+                            <div className="w-full sm:w-64">
+                                <SearchBar
+                                    value={searchTerm}
+                                    onChange={setSearchTerm}
+                                    placeholder="Rechercher une opération..."
+                                />
+                            </div>
+                            <DateFilter
+                                date={dateFilter}
+                                onDateChange={setDateFilter}
+                            />
+
+                            <div className="border-l border-border h-8 mx-1 hidden sm:block" />
+
+                            <HistoryExport
+                                entityId={id || ''}
+                                entityType="societe"
+                                entityName={societe?.nom_societe || 'Société'}
+                            />
+                        </div>
                     </div>
-                    <div className="w-full sm:w-auto">
-                        <ViewTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
+                    <div className="border border-border rounded-3xl overflow-hidden bg-surface shadow-sm">
+                        <HistoryTable
+                            history={history}
+                            loading={loadingHistory}
+                            entityName={societe?.nom_societe || 'cette société'}
+                        />
+
+                        <PaginatedTableFooter
+                            loading={loadingHistory}
+                            itemCount={history.length}
+                            currentPage={page}
+                            perPage={perPage}
+                            totalPages={totalPages}
+                            onPageChange={setPage}
+                            onPerPageChange={setPerPage}
+                            searchTerm={searchTerm}
+                            entityName="opérations"
+                        />
                     </div>
-                </div>
-
-                {/* 2. Barre d'outils (Recherche & Filtres) */}
-                {activeTab === 'employes' ? (
-                    <ViewToolbar
-                        searchTerm={empHook.searchTerm}
-                        onSearchChange={empHook.setSearchTerm}
-                        selectedDate={empHook.selectedDate}
-                        onDateChange={empHook.setSelectedDate}
-                        placeholder="Rechercher un chauffeur..."
-                    />
-                ) : (
-                    <ViewToolbar
-                        searchTerm={vehHook.searchTerm}
-                        onSearchChange={vehHook.setSearchTerm}
-                        selectedDate={vehHook.selectedDate}
-                        onDateChange={vehHook.setSelectedDate}
-                        placeholder="Rechercher un véhicule..."
-                    />
-                )}
-
-                {/* 3. Section Tableau (Table + Pagination) - Exactement comme l'index */}
-                <div className="bg-surface rounded-2xl shadow-sm border border-border overflow-hidden">
-                    {/* Tableau direct, pas de header interne */}
-                    {activeTab === 'employes' ? (
-                        <EmployeTable
-                            employes={empHook.employes} loading={empHook.loading}
-                            onEdit={empHook.openEditModal} onDelete={empHook.openDeleteModal}
-                        />
-                    ) : (
-                        <VehiculeTable
-                            vehicules={vehHook.vehicules} loading={vehHook.loading}
-                            onEdit={vehHook.openEditModal} onDelete={vehHook.openDeleteModal}
-                        />
-                    )}
-
-                    {/* Pagination direct après le tableau */}
-                    {activeTab === 'employes' ? (
-                        <PaginatedTableFooter
-                            loading={empHook.loading}
-                            itemCount={empHook.employes.length}
-                            currentPage={empHook.currentPage}
-                            perPage={empHook.perPage}
-                            totalPages={empHook.totalPages}
-                            onPageChange={empHook.setCurrentPage}
-                            onPerPageChange={empHook.setPerPage}
-                            searchTerm={empHook.searchTerm}
-                            entityName="chauffeurs"
-                        />
-                    ) : (
-                        <PaginatedTableFooter
-                            loading={vehHook.loading}
-                            itemCount={vehHook.vehicules.length}
-                            currentPage={vehHook.currentPage}
-                            perPage={vehHook.perPage}
-                            totalPages={vehHook.totalPages}
-                            onPageChange={vehHook.setCurrentPage}
-                            onPerPageChange={vehHook.setPerPage}
-                            searchTerm={vehHook.searchTerm}
-                            entityName="véhicules"
-                        />
-                    )}
                 </div>
             </div>
-
-            <ViewModals
-                societeId={id!}
-                empForm={{
-                    isOpen: empHook.isFormModalOpen, selected: empHook.selectedEmploye,
-                    close: empHook.closeModals, submit: empHook.handleFormSubmit,
-                    isSubmitting: empHook.isSubmitting
-                }}
-                empDelete={{ isOpen: empHook.isDeleteModalOpen, confirm: empHook.handleDeleteConfirm }}
-                vehForm={{
-                    isOpen: vehHook.isFormModalOpen, selected: vehHook.selectedVehicule,
-                    close: vehHook.closeModals, submit: vehHook.handleFormSubmit,
-                    isSubmitting: vehHook.isSubmitting
-                }}
-                vehDelete={{ isOpen: vehHook.isDeleteModalOpen, confirm: vehHook.handleDeleteConfirm }}
-            />
         </PageLayout>
     );
 }

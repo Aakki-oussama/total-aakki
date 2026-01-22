@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 /**
  * PAGE: SocietesPage
  * Point central de gestion des sociétés.
- * Gère le listing, la recherche, la pagination et le formulaire Triple-Action.
+ * Gère le listing, la recherche, la pagination et le formulaire de société.
  */
 export default function SocietesPage() {
     const navigate = useNavigate();
@@ -50,12 +50,12 @@ export default function SocietesPage() {
     return (
         <PageLayout
             title="Gestion des Sociétés"
-            description="Gérez vos sociétés partenaires, leurs chauffeurs et leur flotte de véhicules."
+            description="Gérez vos sociétés partenaires et visualisez leurs relevés de compte."
             onAdd={openCreateModal}
             variant="content"
         >
             <div className="flex flex-col gap-4 sm:gap-6">
-                {/* BARRE D'OUTILS (Recherche & Filtres) - Style Harmonisé */}
+                {/* BARRE D'OUTILS (Recherche & Filtres) */}
                 <div className="flex items-center gap-2 sm:gap-4 bg-surface/50 p-3 sm:p-4 rounded-2xl border border-border/50">
                     <div className="flex-1">
                         <SearchBar
@@ -97,13 +97,13 @@ export default function SocietesPage() {
                 </div>
             </div>
 
-            {/* MODAL: Formulaire Triple-Action */}
+            {/* MODAL: Formulaire de Société */}
             {isFormModalOpen && (
                 <Modal
                     isOpen={isFormModalOpen}
                     onClose={closeModals}
                     title={selectedSociete ? 'Modifier la société' : 'Nouvelle société'}
-                    description={selectedSociete ? 'Modifiez les informations de la société.' : 'Créez une nouvelle société avec ses chauffeurs et véhicules.'}
+                    description={selectedSociete ? 'Modifiez les informations de la société.' : 'Créez une nouvelle société.'}
                     size="xl"
                 >
                     <SocieteForm

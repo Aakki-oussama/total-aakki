@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import PageLayout from '@/components/layout/PageLayout';
 import ClientIdentityHeader from '@/features/clients/components/ClientIdentityHeader';
 import ClientStats from '@/features/clients/components/ClientStats';
-import ClientHistoryTable from '@/features/clients/components/ClientHistoryTable';
+import HistoryTable from '@/features/shared/components/HistoryTable';
 import { useClientDetails } from '@/features/clients/hooks/useClientDetails';
 import { useClientHistory } from '@/features/clients/hooks/useClientHistory';
 import { Spinner, SearchBar, DateFilter, PaginatedTableFooter } from '@/components/shared/ui';
@@ -86,9 +86,10 @@ export default function ClientView() {
                     </div>
 
                     <div className="border border-border rounded-3xl overflow-hidden bg-surface shadow-sm">
-                        <ClientHistoryTable
+                        <HistoryTable
                             history={history}
                             loading={loadingHistory}
+                            entityName={client ? `${client.nom} ${client.prenom}` : 'ce client'}
                         />
 
                         <PaginatedTableFooter

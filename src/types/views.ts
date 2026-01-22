@@ -27,8 +27,6 @@ export interface SocieteAvecSolde {
     nom_societe: string;
     solde: number;
     statut: 'CREDIT' | 'AVANCE' | 'EQUILIBRE';
-    nombre_vehicules: number;
-    nombre_employes: number;
     created_at: string;
     updated_at: string;
 }
@@ -105,36 +103,6 @@ export interface DashboardGlobal {
     gasoil_aujourdhui: number;
     avances_mois: number;
     gasoil_mois: number;
-}
-
-/**
- * View: view_consommation_vehicule
- * Description: Consommation par véhicule avec périodes
- */
-export interface ConsommationVehicule {
-    vehicule_id: string;
-    matricule: string;
-    nom_societe: string;
-    jour: string;
-    semaine: string;
-    mois: string;
-    nombre_transactions: number;
-    total_gasoil: number;
-}
-
-/**
- * View: view_consommation_employe
- * Description: Consommation par employé avec périodes
- */
-export interface ConsommationEmploye {
-    employe_id: string;
-    nom_employe: string;
-    nom_societe: string;
-    jour: string;
-    semaine: string;
-    mois: string;
-    nombre_transactions: number;
-    total_gasoil: number;
 }
 
 /**
