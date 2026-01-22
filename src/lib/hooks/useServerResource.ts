@@ -23,6 +23,8 @@ interface UseServerResourceOptions {
     initialPerPage?: number;
     entityName?: string;
     onSuccessMessage?: string;
+    onCreateMessage?: string;
+    onUpdateMessage?: string;
     onDeleteMessage?: string;
     enabled?: boolean; // Performance : Lazy loading
 }
@@ -39,7 +41,9 @@ export function useServerResource<T extends { id?: string }, TArgs extends unkno
     const {
         initialPerPage = 10,
         entityName = 'élément',
-        onSuccessMessage = `${entityName} mis à jour avec succès`,
+        onSuccessMessage,
+        onCreateMessage = `${entityName} enregistré avec succès`,
+        onUpdateMessage = `${entityName} mis à jour avec succès`,
         onDeleteMessage = `${entityName} supprimé avec succès`,
         enabled = true
     } = options;
@@ -132,7 +136,13 @@ export function useServerResource<T extends { id?: string }, TArgs extends unkno
             }
 
             const result = await submitFn(formData);
-            success(onSuccessMessage);
+
+            // Show specific message or fallback to successMessage
+            const finalMessage = isEditing
+                ? (onUpdateMessage || onSuccessMessage)
+                : (onCreateMessage || onSuccessMessage);
+
+            if (finalMessage) success(finalMessage);
 
             // Re-sync with server for safety and counters
             await loadData();

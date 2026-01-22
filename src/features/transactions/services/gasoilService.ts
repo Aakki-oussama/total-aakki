@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { baseService } from '@/lib/supabase/baseService';
+import { getPaginationRange, applyDateFilter } from '@/lib/supabase/queryHelpers';
 import type { Gasoil } from '@/types/tables';
-import { getPaginationRange } from '@/lib/supabase/queryHelpers';
 
 /**
  * Extended type for Gasoil with all joined details
@@ -13,30 +13,49 @@ export type GasoilWithDetails = Gasoil & {
     vehicule: { matricule: string } | null;
 };
 
+/**
+ * SERVICE: Gasoil (Dépenses)
+ * Gère tout l'historique de consommation de carburant et la liaison avec les soldes.
+ */
 export const gasoilService = {
-    async fetchGasoil(
+    /**
+     * Récupère la liste paginée des consommations de gasoil avec jointures complètes.
+     */
+    async fetchGasoils(
         page: number = 1,
         perPage: number = 10,
+        searchTerm: string = '',
+        dateFilter: string = '',
         options: { clientId?: string; societeId?: string } = {}
     ) {
         const { start, end } = getPaginationRange(page, perPage);
 
+        // Utilisation de la VUE RECHERCHABLE pour éviter le bug "logic tree"
         let query = supabase
-            .from('gasoil')
+            .from('liste_gasoil_recherchable')
             .select(`
                 *,
-                client(nom, prenom),
-                societe(nom_societe),
-                employe(nom, prenom),
-                vehicule(matricule)
-            `, { count: 'exact' })
-            .is('deleted_at', null)
-            .order('date_gasoil', { ascending: false });
+                client:client_id(nom, prenom),
+                societe:societe_id(nom_societe),
+                employe:employe_id(nom, prenom),
+                vehicule:vehicule_id(matricule)
+            `, { count: 'exact' });
 
+        // 1. Filtrage par date
+        query = applyDateFilter(query, dateFilter, 'date_gasoil');
+
+        // 2. Logique de recherche ultra simple sur la colonne search_text de la vue
+        if (searchTerm.trim()) {
+            query = query.ilike('search_text', `%${searchTerm.trim().toLowerCase()}%`);
+        }
+
+        // 3. Filtrage par entité
         if (options.clientId) query = query.eq('client_id', options.clientId);
         if (options.societeId) query = query.eq('societe_id', options.societeId);
 
-        const { data, error, count } = await query.range(start, end);
+        const { data, error, count } = await query
+            .order('date_gasoil', { ascending: false })
+            .range(start, end);
 
         if (error) throw error;
         return {
@@ -45,10 +64,21 @@ export const gasoilService = {
         };
     },
 
+    /**
+     * Création d'un enregistrement Gasoil
+     */
     createGasoil: (record: Omit<Gasoil, 'id' | 'created_at' | 'updated_at' | 'deleted_at'>) =>
         baseService.create<Gasoil>('gasoil', record),
 
-    // Utilise la fonction SQL pour recalculer le solde après suppression
+    /**
+     * Mise à jour d'un enregistrement Gasoil
+     */
+    updateGasoil: (id: string, updates: Partial<Gasoil>) =>
+        baseService.update<Gasoil>('gasoil', id, updates),
+
+    /**
+     * Suppression (Soft Delete) via fonction SQL pour recalculer le solde
+     */
     deleteGasoil: async (id: string) => {
         const { error } = await supabase.rpc('soft_delete_gasoil', { p_gasoil_id: id });
         if (error) throw error;

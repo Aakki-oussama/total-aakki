@@ -1,5 +1,5 @@
 
-import { useState, useRef, useEffect, useMemo, useLayoutEffect, useCallback } from 'react';
+import { type ReactNode, useState, useRef, useEffect, useMemo, useLayoutEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Search, ChevronDown, Check, X, Loader2 } from 'lucide-react';
 
@@ -9,7 +9,7 @@ interface SearchOption {
 }
 
 interface SearchSelectProps {
-    label?: string;
+    label?: ReactNode;
     options: SearchOption[];
     value: string;
     onChange: (value: string) => void;

@@ -3,7 +3,8 @@ import {
     LayoutDashboard,
     Users,
     Building2,
-    Wallet
+    Wallet,
+    Fuel
 } from 'lucide-react';
 import type { NavItem } from '../types';
 
@@ -32,5 +33,11 @@ export const navItems: NavItem[] = [
         label: 'Paiements',
         icon: Wallet,
         path: '/paiements'
+    },
+    {
+        id: 'gasoil',
+        label: 'Gasoil',
+        icon: Fuel,
+        path: '/gasoil'
     }
 ];

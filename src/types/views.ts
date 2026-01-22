@@ -147,3 +147,20 @@ export interface StatsAvance {
     solde_actuel: number;
     nombre_transactions: number;
 }
+
+/**
+ * View: view_releve_compte
+ * Description: Historique fusionné (Gasoil + Avances) avec solde progressif
+ */
+export interface HistoryItem {
+    id: string;
+    date_operation: string;
+    type: 'GASOIL' | 'PAIEMENT';
+    description: string;
+    debit: number;
+    credit: number;
+    solde_ligne: number;
+    client_id: string | null;
+    societe_id: string | null;
+    created_at: string;
+}

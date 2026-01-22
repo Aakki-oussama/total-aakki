@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import type { Societe } from '@/types/tables';
 import { baseService } from '@/lib/supabase/baseService';
 import { applyDateFilter, getPaginationRange } from '@/lib/supabase/queryHelpers';
+import { historyService } from '@/features/shared/services/historyService';
 
 /**
  * SERVICE: Societes
@@ -63,5 +64,37 @@ export const societeService = {
         baseService.softDelete('societe', id),
 
     getSocieteById: (id: string) =>
-        baseService.getById<Societe>('societe', id)
+        baseService.getById<Societe>('societe', id),
+
+    async getSocieteHistory(
+        societeId: string,
+        page: number = 1,
+        perPage: number = 10,
+        searchTerm: string = '',
+        dateFilter: string = ''
+    ) {
+        return historyService.fetchHistory({
+            entityType: 'societe',
+            entityId: societeId,
+            page,
+            perPage,
+            searchTerm,
+            dateFilter
+        });
+    },
+
+    async getSocieteHistoryAll(
+        societeId: string,
+        searchTerm: string = '',
+        dateFilter: string = ''
+    ) {
+        const { items } = await historyService.fetchHistory({
+            entityType: 'societe',
+            entityId: societeId,
+            searchTerm,
+            dateFilter,
+            all: true
+        });
+        return items;
+    }
 };

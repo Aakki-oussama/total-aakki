@@ -1,0 +1,53 @@
+-- ============================================
+-- VIEW: RELEVÉ DE COMPTE FUSIONNÉ
+-- Mélange Gasoil (-) et Avances (+)
+-- ============================================
+
+CREATE OR REPLACE VIEW view_releve_compte AS
+SELECT 
+    *,
+    -- Calcul du solde progressif (Running Balance)
+    -- On fait la somme des (crédits - débits) depuis le début pour chaque entité
+    SUM(credit - debit) OVER (
+        PARTITION BY COALESCE(client_id, societe_id) 
+        ORDER BY date_operation ASC, created_at ASC
+    ) as solde_ligne
+FROM (
+    -- 1. Récupération des prises de GASOIL (DÉBIT)
+    SELECT 
+        id,
+        date_gasoil AS date_operation,
+        'GASOIL' AS type,
+        'Consommation Gasoil' AS description,
+        montant AS debit,
+        0 AS credit,
+        client_id,
+        societe_id,
+        created_at
+    FROM gasoil
+    WHERE deleted_at IS NULL
+
+    UNION ALL
+
+    -- 2. Récupération des PAIEMENTS (CRÉDIT)
+    SELECT 
+        id,
+        date_avance AS date_operation,
+        'PAIEMENT' AS type,
+        CASE 
+            WHEN mode_paiement = 'CHEQUE' THEN CONCAT('CHÈQUE (n° ', numero_cheque, ')')
+            ELSE 'ESPÈCES (CASH)'
+        END AS description,
+        0 AS debit,
+        montant AS credit,
+        client_id,
+        societe_id,
+        created_at
+    FROM avance
+    WHERE deleted_at IS NULL
+) consolidated_data
+ORDER BY date_operation DESC, created_at DESC;
+
+-- Note : Le tri final est DESC (le plus récent en haut) 
+-- mais le calcul du solde (OVER) se fait en ASC (du plus vieux au plus récent) 
+-- pour garantir la justesse comptable.

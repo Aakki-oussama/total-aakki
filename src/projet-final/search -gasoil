@@ -1,0 +1,22 @@
+-- Création de la vue optimisée pour la recherche Gasoil
+CREATE OR REPLACE VIEW liste_gasoil_recherchable AS
+SELECT 
+    g.*,
+    COALESCE(c.nom || ' ' || c.prenom, s.nom_societe) as beneficiaire_nom,
+    COALESCE(e.nom || ' ' || e.prenom, '---') as employe_nom,
+    COALESCE(v.matricule, '---') as vehicule_matricule,
+    -- Colonne de recherche globale (concaténation de tout ce qu'on veut chercher)
+    LOWER(
+        COALESCE(c.nom, '') || ' ' || 
+        COALESCE(c.prenom, '') || ' ' || 
+        COALESCE(s.nom_societe, '')
+    ) as search_text
+FROM gasoil g
+LEFT JOIN client c ON g.client_id = c.id
+LEFT JOIN societe s ON g.societe_id = s.id
+LEFT JOIN employe e ON g.employe_id = e.id
+LEFT JOIN vehicule v ON g.vehicule_id = v.id
+WHERE g.deleted_at IS NULL;
+
+-- Droits de lecture
+GRANT SELECT ON liste_gasoil_recherchable TO anon, authenticated;

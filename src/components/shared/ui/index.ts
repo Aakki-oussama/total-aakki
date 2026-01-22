@@ -19,3 +19,4 @@ export { default as Pagination } from './Pagination';
 export { default as PerPageSelector } from './PerPageSelector';
 export { default as PaginatedTableFooter } from './PaginatedTableFooter';
 export { default as SearchSelect } from './SearchSelect';
+export { default as StatCard } from './StatCard';

@@ -1,21 +1,28 @@
+import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 
 /**
  * Apply date filter to a Supabase query
- * Filters by created_at between 00:00:00 and 23:59:59 of the given date
+ * Filters by date range (start to end) or a single day
  */
-// 🔧 FIX: Use 'any' for query builder to avoid complex generic type mismatches and infinite recursion errors
-export const applyDateFilter = (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    query: any,
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const applyDateFilter = <T extends PostgrestFilterBuilder<any, any, any, any, any, any, any>>(
+    query: T,
     dateFilter: string,
     column: string = 'created_at'
-) => {
+): T => {
     if (!dateFilter?.trim()) return query;
 
+    // Si on a une période (format "YYYY-MM-DD:YYYY-MM-DD")
+    if (dateFilter.includes(':')) {
+        const [start, end] = dateFilter.split(':');
+        return query.gte(column, `${start}T00:00:00`).lte(column, `${end}T23:59:59`) as unknown as T;
+    }
+
+    // Sinon, filtre par jour unique
     const startOfDay = `${dateFilter}T00:00:00`;
     const endOfDay = `${dateFilter}T23:59:59`;
 
-    return query.gte(column, startOfDay).lte(column, endOfDay);
+    return query.gte(column, startOfDay).lte(column, endOfDay) as unknown as T;
 };
 
 /**
