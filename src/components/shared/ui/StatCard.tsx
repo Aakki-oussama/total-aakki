@@ -9,6 +9,7 @@ export interface StatCardProps {
     loading?: boolean;
     suffix?: string;
     showDecimals?: boolean;
+    description?: string;
 }
 
 /**
@@ -22,7 +23,8 @@ const StatCard = ({
     color,
     loading = false,
     suffix = 'DH',
-    showDecimals = false
+    showDecimals = false,
+    description
 }: StatCardProps) => {
 
     // Utilisation des variables de couleurs sémantiques du projet
@@ -63,17 +65,24 @@ const StatCard = ({
             </div>
 
             {/* 2. Amount and Currency */}
-            <div className="flex items-baseline gap-1">
-                <span className="text-lg md:text-2xl font-black text-main leading-none">
-                    {amount.toLocaleString('fr-FR', {
-                        minimumFractionDigits: showDecimals ? 2 : 0,
-                        maximumFractionDigits: showDecimals ? 2 : 0
-                    })}
-                </span>
-                {suffix && (
-                    <span className="text-[8px] md:text-xs font-bold text-muted uppercase">
-                        {suffix}
+            <div className="flex flex-col">
+                <div className="flex items-baseline gap-1">
+                    <span className="text-lg md:text-2xl font-black text-main leading-none">
+                        {amount.toLocaleString('fr-FR', {
+                            minimumFractionDigits: showDecimals ? 2 : 0,
+                            maximumFractionDigits: showDecimals ? 2 : 0
+                        })}
                     </span>
+                    {suffix && (
+                        <span className="text-[8px] md:text-xs font-bold text-muted uppercase">
+                            {suffix}
+                        </span>
+                    )}
+                </div>
+                {description && (
+                    <p className="text-[8px] md:text-[10px] font-medium text-muted mt-1">
+                        {description}
+                    </p>
                 )}
             </div>
 

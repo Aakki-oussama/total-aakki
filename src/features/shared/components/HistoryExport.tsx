@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Download, FileText, Calendar } from 'lucide-react';
+import { Download, Calendar } from 'lucide-react';
 import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
-import { Modal, Button, Spinner } from '@/components/shared/ui';
+import { Modal, Button } from '@/components/shared/ui';
 import { historyService } from '../services/historyService';
 import { HistoryPDF } from './HistoryPDF';
 import { useToast } from '@/context/toast/useToast';
@@ -15,13 +15,13 @@ interface HistoryExportProps {
 
 export default function HistoryExport({ entityId, entityType, entityName }: HistoryExportProps) {
     const [isOpen, setIsOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loadingType, setLoadingType] = useState<'all' | 'month' | null>(null);
     const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
     const { success, error } = useToast();
 
     const generatePDF = async (periodType: 'all' | 'month') => {
         try {
-            setLoading(true);
+            setLoadingType(periodType);
 
             let dateFilter = '';
             let periodLabel = 'Tout l\'historique';
@@ -74,7 +74,7 @@ export default function HistoryExport({ entityId, entityType, entityName }: Hist
             console.error(err);
             error("Erreur lors de l'exportation");
         } finally {
-            setLoading(false);
+            setLoadingType(null);
         }
     };
 
@@ -92,47 +92,41 @@ export default function HistoryExport({ entityId, entityType, entityName }: Hist
             <Modal
                 isOpen={isOpen}
                 onClose={() => setIsOpen(false)}
-                title="Choisir la période"
+                title="Exporter l'historique"
+                description="Choisissez la période de l'export."
                 size="sm"
-            >
-                <div className="space-y-6 py-2">
-                    {/* Option 1: Tout */}
-                    <button
-                        onClick={() => generatePDF('all')}
-                        disabled={loading}
-                        className="w-full flex items-center justify-between p-4 rounded-2xl border border-border hover:border-primary hover:bg-primary/5 transition-all group"
-                    >
-                        <div className="flex items-center gap-3">
-                            <FileText size={20} className="text-muted group-hover:text-primary" />
-                            <span className="font-bold text-main">Toute la période</span>
-                        </div>
-                    </button>
-
-                    {/* Diviseur */}
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-muted uppercase tracking-wider">
-                        <div className="h-px flex-1 bg-border" />
-                        <span>Ou choisir un mois</span>
-                        <div className="h-px flex-1 bg-border" />
-                    </div>
-
-                    {/* Option 2: Mois spécifique */}
-                    <div className="space-y-3">
-                        <div className="relative">
-                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={18} />
-                            <input
-                                type="month"
-                                value={selectedMonth}
-                                onChange={(e) => setSelectedMonth(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-surface text-main font-medium"
-                            />
-                        </div>
+                footer={
+                    <>
                         <Button
-                            className="w-full py-6"
-                            onClick={() => generatePDF('month')}
-                            disabled={loading || !selectedMonth}
+                            variant="secondary"
+                            onClick={() => generatePDF('all')}
+                            loading={loadingType === 'all'}
+                            disabled={loadingType === 'month'}
                         >
-                            {loading ? <Spinner size="sm" /> : "Exporter ce mois"}
+                            Tout l'historique
                         </Button>
+                        <Button
+                            onClick={() => generatePDF('month')}
+                            loading={loadingType === 'month'}
+                            disabled={loadingType === 'all' || !selectedMonth}
+                        >
+                            Exporter ce mois
+                        </Button>
+                    </>
+                }
+            >
+                <div className="py-2 space-y-3 text-center">
+                    <p className="text-[9px] uppercase tracking-wider font-bold text-muted">
+                        Choisir un mois spécifique
+                    </p>
+                    <div className="relative group max-w-[240px] mx-auto">
+                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-primary/60" size={16} />
+                        <input
+                            type="month"
+                            value={selectedMonth}
+                            onChange={(e) => setSelectedMonth(e.target.value)}
+                            className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-border focus:border-primary/40 focus:ring-2 focus:ring-primary/5 outline-none bg-surface text-main font-bold text-sm transition-all"
+                        />
                     </div>
                 </div>
             </Modal>

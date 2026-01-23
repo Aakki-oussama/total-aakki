@@ -35,7 +35,7 @@ export default function AvancesPage() {
 
     return (
         <PageLayout
-            title="Gestion des Paiements"
+            title="Gestion des Avances"
             description="Suivez et enregistrez toutes les rentrées d'argent des clients et sociétés."
             variant="content"
             onAdd={openCreateModal}

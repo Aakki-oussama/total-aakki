@@ -3,6 +3,7 @@ import { useClients } from '@/features/clients/hook/useClients';
 import ClientTable from '@/features/clients/components/ClientTable';
 import ClientForm from '@/features/clients/components/ClientForm';
 import { Modal, DeleteConfirmationModal, SearchBar, DateFilter, PaginatedTableFooter } from '@/components/shared/ui';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * PAGE: Clients
@@ -10,6 +11,7 @@ import { Modal, DeleteConfirmationModal, SearchBar, DateFilter, PaginatedTableFo
  * Utilise le hook useClients pour centraliser la logique et les modals.
  */
 export default function ClientsPage() {
+    const navigate = useNavigate();
     const {
         clients,
         loading,
@@ -67,6 +69,7 @@ export default function ClientsPage() {
                     <ClientTable
                         clients={clients}
                         loading={loading}
+                        onView={(client) => navigate(`/clients/${client.id}`)}
                         onEdit={openEditModal}
                         onDelete={openDeleteModal}
                     />

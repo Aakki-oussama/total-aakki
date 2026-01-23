@@ -47,8 +47,40 @@ export const societeService = {
     deleteSociete: (id: string) =>
         baseService.softDelete('societe', id),
 
-    getSocieteById: (id: string) =>
-        baseService.getById<Societe>('societe', id),
+    async getSocieteById(id: string) {
+        // 1. Récupérer la société et son solde
+        const societeQuery = supabase
+            .from('societe')
+            .select(`
+                *,
+                solde:solde(solde_actuel, total_avances, total_gasoil)
+            `)
+            .eq('id', id)
+            .single();
+
+        // 2. Récupérer le nombre total de transactions gasoil
+        const gasoilCountQuery = supabase
+            .from('gasoil')
+            .select('*', { count: 'exact', head: true })
+            .eq('societe_id', id)
+            .is('deleted_at', null);
+
+        const [societeRes, gasoilRes] = await Promise.all([societeQuery, gasoilCountQuery]);
+
+        if (societeRes.error) throw societeRes.error;
+
+        // Formater le résultat avec sécurité sur le solde et ajout du count
+        const data = societeRes.data;
+        const result = {
+            ...data,
+            total_transactions: gasoilRes.count || 0,
+            solde: Array.isArray(data.solde)
+                ? (data.solde[0] || { solde_actuel: 0, total_avances: 0, total_gasoil: 0 })
+                : (data.solde || { solde_actuel: 0, total_avances: 0, total_gasoil: 0 })
+        };
+
+        return result;
+    },
 
     async getSocieteHistory(
         societeId: string,

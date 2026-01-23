@@ -30,7 +30,7 @@ export const navItems: NavItem[] = [
     },
     {
         id: 'paiements',
-        label: 'Paiements',
+        label: 'Avances',
         icon: Wallet,
         path: '/paiements'
     },

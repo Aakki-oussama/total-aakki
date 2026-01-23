@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Building2 } from 'lucide-react';
 import { Button, Input } from '@/components/shared/ui';
 import type { Societe } from '@/types/tables';
 import { sanitize } from '@/lib/utils/sanitizers';
@@ -55,29 +54,31 @@ export default function SocieteForm({ initialData, isSubmitting, onSubmit, onCan
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-            {/* 1. Informations Société */}
-            <div className="bg-muted/5 p-5 rounded-xl border border-border">
-                <div className="flex items-center gap-2 mb-4 text-primary font-semibold">
-                    <Building2 size={20} />
-                    <span>Informations de la Société</span>
-                </div>
-                <Input
-                    label="Nom de la Société"
-                    value={nomSociete}
-                    onChange={(e) => handleNameChange(e.target.value)}
-                    placeholder="Ex: Entreprise Transport Aakki"
-                    error={errors.nom_societe}
-                    required
-                    autoFocus
-                />
-            </div>
+            <Input
+                label="Nom de la Société"
+                value={nomSociete}
+                onChange={(e) => handleNameChange(e.target.value)}
+                placeholder="Ex: Entreprise Transport Aakki"
+                error={errors.nom_societe}
+                required
+                autoFocus
+            />
 
             {/* Actions */}
             <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-6 border-t border-border">
-                <Button type="button" variant="ghost" onClick={onCancel} disabled={isSubmitting}>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={onCancel}
+                    disabled={isSubmitting}
+                >
                     Annuler
                 </Button>
-                <Button type="submit" variant="primary" loading={isSubmitting}>
+                <Button
+                    type="submit"
+                    variant="primary"
+                    loading={isSubmitting}
+                >
                     {initialData ? 'Enregistrer les modifications' : 'Créer la Société'}
                 </Button>
             </div>

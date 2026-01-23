@@ -101,32 +101,7 @@ GROUP BY DATE_TRUNC('month', date_gasoil), TO_CHAR(date_gasoil, 'YYYY-MM');
 
 CREATE UNIQUE INDEX idx_mat_gasoil_mois ON mat_gasoil_par_mois(mois);
 
--- ============================================
--- MATVIEW 7: Consommation VÉHICULE par MOIS
--- ============================================
 
-CREATE MATERIALIZED VIEW IF NOT EXISTS mat_consommation_vehicule_mois AS
-SELECT 
-    v.id as vehicule_id,
-    v.matricule,
-    s.id as societe_id,
-    s.nom_societe,
-    DATE_TRUNC('month', g.date_gasoil) as mois,
-    TO_CHAR(g.date_gasoil, 'YYYY-MM') as mois_format,
-    COUNT(*) as nombre_transactions,
-    SUM(g.montant) as total_gasoil
-FROM vehicule v
-JOIN societe s ON s.id = v.societe_id
-JOIN gasoil g ON g.vehicule_id = v.id
-WHERE v.deleted_at IS NULL
-  AND s.deleted_at IS NULL
-  AND g.deleted_at IS NULL
-GROUP BY v.id, v.matricule, s.id, s.nom_societe, 
-         DATE_TRUNC('month', g.date_gasoil),
-         TO_CHAR(g.date_gasoil, 'YYYY-MM');
-
-CREATE INDEX idx_mat_consommation_vehicule ON mat_consommation_vehicule_mois(vehicule_id, mois);
-CREATE INDEX idx_mat_consommation_vehicule_societe ON mat_consommation_vehicule_mois(societe_id, mois);
 
 -- ============================================
 -- MATVIEW 8: Consommation EMPLOYÉ par MOIS
@@ -169,7 +144,7 @@ BEGIN
     REFRESH MATERIALIZED VIEW CONCURRENTLY mat_gasoil_par_jour;
     REFRESH MATERIALIZED VIEW CONCURRENTLY mat_gasoil_par_semaine;
     REFRESH MATERIALIZED VIEW CONCURRENTLY mat_gasoil_par_mois;
-    REFRESH MATERIALIZED VIEW CONCURRENTLY mat_consommation_vehicule_mois;
+
     REFRESH MATERIALIZED VIEW CONCURRENTLY mat_consommation_employe_mois;
 END;
 $$ LANGUAGE plpgsql;
@@ -191,9 +166,7 @@ CREATE INDEX IF NOT EXISTS idx_gasoil_date_employe
 ON gasoil(date_gasoil, employe_id)
 WHERE deleted_at IS NULL;
 
-CREATE INDEX IF NOT EXISTS idx_gasoil_date_vehicule
-ON gasoil(date_gasoil, vehicule_id)
-WHERE deleted_at IS NULL;
+
 
 -- Index pour recherche par période
 CREATE INDEX IF NOT EXISTS idx_avance_date_trunc_week

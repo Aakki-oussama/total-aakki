@@ -104,7 +104,7 @@ export default function SocietesPage() {
                     onClose={closeModals}
                     title={selectedSociete ? 'Modifier la société' : 'Nouvelle société'}
                     description={selectedSociete ? 'Modifiez les informations de la société.' : 'Créez une nouvelle société.'}
-                    size="xl"
+                    size="md"
                 >
                     <SocieteForm
                         initialData={selectedSociete}

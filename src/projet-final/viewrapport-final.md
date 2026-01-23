@@ -43,13 +43,11 @@ SELECT
         WHEN COALESCE(s.solde_actuel, 0) > 0 THEN 'AVANCE'
         ELSE 'EQUILIBRE'
     END as statut,
-    COUNT(DISTINCT v.id) as nombre_vehicules,
     COUNT(DISTINCT e.id) as nombre_employes,
     soc.created_at,
     soc.updated_at
 FROM societe soc
 LEFT JOIN solde s ON s.societe_id = soc.id
-LEFT JOIN vehicule v ON v.societe_id = soc.id AND v.deleted_at IS NULL
 LEFT JOIN employe e ON e.societe_id = soc.id AND e.deleted_at IS NULL
 WHERE soc.deleted_at IS NULL
 GROUP BY soc.id, soc.nom_societe, s.total_avances, s.total_gasoil, s.solde_actuel, soc.created_at, soc.updated_at;
@@ -121,15 +119,13 @@ SELECT
     COALESCE(CONCAT(c.nom, ' ', c.prenom), s.nom_societe) as nom_entite,
     g.employe_id,
     CONCAT(e.nom, ' ', e.prenom) as nom_employe,
-    g.vehicule_id,
-    v.matricule,
+    CONCAT(e.nom, ' ', e.prenom) as nom_employe,
     g.created_at,
     g.deleted_at
 FROM gasoil g
 LEFT JOIN client c ON g.client_id = c.id
 LEFT JOIN societe s ON g.societe_id = s.id
 LEFT JOIN employe e ON g.employe_id = e.id
-LEFT JOIN vehicule v ON g.vehicule_id = v.id
 WHERE g.deleted_at IS NULL
 ORDER BY g.date_gasoil DESC;
 
@@ -225,30 +221,7 @@ WHERE deleted_at IS NULL
 GROUP BY DATE_TRUNC('month', date_gasoil), TO_CHAR(date_gasoil, 'YYYY-MM')
 ORDER BY mois DESC;
 
--- ============================================
--- VIEW 12: Consommation par VÉHICULE
--- ============================================
 
-CREATE OR REPLACE VIEW view_consommation_vehicule AS
-SELECT 
-    v.id as vehicule_id,
-    v.matricule,
-    s.nom_societe,
-    DATE(g.date_gasoil) as jour,
-    DATE_TRUNC('week', g.date_gasoil) as semaine,
-    DATE_TRUNC('month', g.date_gasoil) as mois,
-    COUNT(*) as nombre_transactions,
-    SUM(g.montant) as total_gasoil
-FROM vehicule v
-JOIN societe s ON s.id = v.societe_id
-JOIN gasoil g ON g.vehicule_id = v.id
-WHERE v.deleted_at IS NULL
-  AND s.deleted_at IS NULL
-  AND g.deleted_at IS NULL
-GROUP BY v.id, v.matricule, s.nom_societe, DATE(g.date_gasoil),
-         DATE_TRUNC('week', g.date_gasoil),
-         DATE_TRUNC('month', g.date_gasoil)
-ORDER BY jour DESC;
 
 -- ============================================
 -- VIEW 13: Consommation par EMPLOYÉ
@@ -275,27 +248,7 @@ GROUP BY e.id, e.nom, e.prenom, s.nom_societe, DATE(g.date_gasoil),
          DATE_TRUNC('month', g.date_gasoil)
 ORDER BY jour DESC;
 
--- ============================================
--- VIEW 14: TOP 5 Véhicules (mois en cours)
--- ============================================
 
-CREATE OR REPLACE VIEW view_top_vehicules_mois AS
-SELECT 
-    v.id as vehicule_id,
-    v.matricule,
-    s.nom_societe,
-    COUNT(*) as nombre_transactions,
-    SUM(g.montant) as total_gasoil
-FROM vehicule v
-JOIN societe s ON s.id = v.societe_id
-JOIN gasoil g ON g.vehicule_id = v.id
-WHERE v.deleted_at IS NULL
-  AND s.deleted_at IS NULL
-  AND g.deleted_at IS NULL
-  AND DATE_TRUNC('month', g.date_gasoil) = DATE_TRUNC('month', CURRENT_DATE)
-GROUP BY v.id, v.matricule, s.nom_societe
-ORDER BY total_gasoil DESC
-LIMIT 5;
 
 -- ============================================
 -- VIEW 15: TOP 5 Employés (mois en cours)
