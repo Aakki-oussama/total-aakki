@@ -59,5 +59,32 @@ export const dashboardService = {
             },
             total: clientAmount + societeAmount
         };
+    },
+
+    /**
+     * Récupère les 5 plus grosses dettes (Red List)
+     */
+    async getTopDebts(): Promise<Impaye[]> {
+        const { data, error } = await supabase
+            .from('view_impayes')
+            .select('*')
+            .order('montant_du', { ascending: true }) // Les plus négatifs en premier
+            .limit(5);
+
+        if (error) throw error;
+        return data as Impaye[];
+    },
+
+    /**
+     * Récupère le flux d'activité récent (Global)
+     */
+    async getActivityTimeline() {
+        const { data, error } = await supabase
+            .from('view_timeline_activite')
+            .select('*')
+            .limit(5);
+
+        if (error) throw error;
+        return data;
     }
 };

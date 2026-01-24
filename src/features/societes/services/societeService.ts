@@ -17,9 +17,9 @@ export const societeService = {
         const { start, end } = getPaginationRange(page, perPage);
 
         let query = supabase
-            .from('societe')
-            .select('*, solde(solde_actuel, total_avances, total_gasoil)', { count: 'exact' })
-            .is('deleted_at', null);
+            .from('view_societes_avec_solde')
+            .select('*', { count: 'exact' });
+        // .is('deleted_at', null); // View handles this
 
         if (searchTerm.trim()) {
             query = query.ilike('nom_societe', `%${searchTerm}%`);
@@ -48,13 +48,10 @@ export const societeService = {
         baseService.softDelete('societe', id),
 
     async getSocieteById(id: string) {
-        // 1. Récupérer la société et son solde
+        // 1. Récupérer la société via la VUE
         const societeQuery = supabase
-            .from('societe')
-            .select(`
-                *,
-                solde:solde(solde_actuel, total_avances, total_gasoil)
-            `)
+            .from('view_societes_avec_solde')
+            .select('*')
             .eq('id', id)
             .single();
 
@@ -69,14 +66,19 @@ export const societeService = {
 
         if (societeRes.error) throw societeRes.error;
 
-        // Formater le résultat avec sécurité sur le solde et ajout du count
+        // Formater le résultat pour matcher l'interface attendue par le Frontend
         const data = societeRes.data;
         const result = {
-            ...data,
+            id: data.id,
+            nom_societe: data.nom_societe,
+            created_at: data.created_at,
+            updated_at: data.updated_at,
             total_transactions: gasoilRes.count || 0,
-            solde: Array.isArray(data.solde)
-                ? (data.solde[0] || { solde_actuel: 0, total_avances: 0, total_gasoil: 0 })
-                : (data.solde || { solde_actuel: 0, total_avances: 0, total_gasoil: 0 })
+            solde: {
+                solde_actuel: data.solde_actuel,
+                total_avances: data.total_avances,
+                total_gasoil: data.total_gasoil
+            }
         };
 
         return result;

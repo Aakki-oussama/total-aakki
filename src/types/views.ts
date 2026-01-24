@@ -36,7 +36,7 @@ export interface SocieteAvecSolde {
  * Description: Tous les clients/sociétés avec solde négatif
  */
 export interface Impaye {
-    avance_id: string;
+    solde_id: string;
     type_entite: 'CLIENT' | 'SOCIETE';
     nom: string;
     montant_du: number; // Négatif

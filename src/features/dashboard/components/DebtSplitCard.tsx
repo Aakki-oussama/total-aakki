@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle, Users, Building2 } from 'lucide-react';
 import { dashboardService, type DebtSplit } from '../services/dashboardService';
+import { iconConfig } from '@/config/icons';
 
 /**
  * COMPONENT: DebtSplitCard
@@ -41,26 +42,26 @@ const DebtSplitCard = () => {
         <div className="bg-surface dark:bg-gray-800 rounded-3xl p-6 shadow-xl border border-border h-full">
             {/* Header */}
             <div className="flex items-center gap-3 mb-6">
-                <div className="p-2.5 rounded-2xl bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800/50">
-                    <AlertTriangle className="w-5 h-5" />
+                <div className="p-2.5 rounded-2xl bg-primary/10 text-primary border border-primary/20">
+                    <AlertTriangle className={iconConfig.sizes.header} strokeWidth={iconConfig.strokeWidth} />
                 </div>
                 <div>
-                    <h3 className="text-sm font-black text-main uppercase tracking-widest">Impayés (Dettes)</h3>
+                    <h3 className="text-sm font-black text-main uppercase tracking-widest">Répartition Dettes</h3>
                     <p className="text-[10px] text-muted uppercase font-bold tracking-tighter">Clients vs Sociétés</p>
                 </div>
             </div>
 
             <div className="space-y-6">
-                {/* Visual Bar */}
-                <div className="flex h-12 w-full rounded-2xl overflow-hidden border-4 border-surface dark:border-gray-900 shadow-inner">
+                {/* Visual Bar - Clean & Flat */}
+                <div className="flex h-10 w-full rounded-2xl overflow-hidden bg-muted/10 border border-border/50">
                     <div
-                        className="h-full bg-red-500 flex items-center justify-center text-[10px] font-black text-white transition-all duration-1000"
+                        className="h-full bg-client flex items-center justify-center text-[10px] font-black text-white transition-all duration-1000"
                         style={{ width: `${clientPercent}%` }}
                     >
                         {clientPercent > 15 && `${clientPercent.toFixed(0)}%`}
                     </div>
                     <div
-                        className="h-full bg-orange-500 flex items-center justify-center text-[10px] font-black text-white transition-all duration-1000"
+                        className="h-full bg-societe flex items-center justify-center text-[10px] font-black text-white transition-all duration-1000"
                         style={{ width: `${societePercent}%` }}
                     >
                         {societePercent > 15 && `${societePercent.toFixed(0)}%`}
@@ -71,11 +72,11 @@ const DebtSplitCard = () => {
                 <div className="space-y-3">
                     <div className="flex items-center justify-between p-3 rounded-2xl bg-muted/10 dark:bg-gray-900/50 border border-border">
                         <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-red-500" />
+                            <div className="w-2 h-2 rounded-full bg-client" />
                             <div className="flex flex-col">
                                 <span className="text-[10px] font-black text-muted uppercase tracking-widest">Clients</span>
                                 <span className="text-xs text-muted font-bold flex items-center gap-1">
-                                    <Users className="w-3 h-3" />
+                                    <Users className={iconConfig.sizes.xs} strokeWidth={iconConfig.strokeWidth} />
                                     {data.clients.count} {data.clients.count > 1 ? 'comptes' : 'compte'}
                                 </span>
                             </div>
@@ -88,11 +89,11 @@ const DebtSplitCard = () => {
                     {/* Legend - Sociétés */}
                     <div className="flex items-center justify-between p-3 rounded-2xl bg-muted/10 dark:bg-gray-900/50 border border-border">
                         <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-orange-500" />
+                            <div className="w-2 h-2 rounded-full bg-societe" />
                             <div className="flex flex-col">
                                 <span className="text-[10px] font-black text-muted uppercase tracking-widest">Sociétés</span>
                                 <span className="text-xs text-muted font-bold flex items-center gap-1">
-                                    <Building2 className="w-3 h-3" />
+                                    <Building2 className={iconConfig.sizes.xs} strokeWidth={iconConfig.strokeWidth} />
                                     {data.societes.count} {data.societes.count > 1 ? 'comptes' : 'compte'}
                                 </span>
                             </div>

@@ -10,6 +10,10 @@ interface ClientTableProps<T extends Client = Client> {
     onView?: (client: T) => void;
 }
 
+interface ClientWithSolde extends Client {
+    solde_actuel?: number;
+}
+
 export default function ClientTable<T extends Client>({
     clients,
     loading,
@@ -25,6 +29,21 @@ export default function ClientTable<T extends Client>({
                     <span className="font-bold text-main">{client.nom} {client.prenom}</span>
                 </div>
             )
+        },
+        {
+            header: 'Solde',
+            render: (client: T) => {
+                // Strict typing: Cast to extended interface
+                const clientData = client as unknown as ClientWithSolde;
+                const solde = clientData.solde_actuel || 0;
+                const colorClass = solde < 0 ? 'text-red-600' : 'text-emerald-600';
+
+                return (
+                    <span className={`font-bold ${colorClass}`}>
+                        {solde.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} DH
+                    </span>
+                );
+            }
         },
         {
             header: 'Date d\'ajout',

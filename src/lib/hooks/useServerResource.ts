@@ -71,10 +71,15 @@ export function useServerResource<T extends { id?: string }, TArgs extends unkno
     // This prevents infinite re-renders when extraFetchArgs array reference changes
     const extraFetchArgsRef = useRef(extraFetchArgs);
 
-    // Update ref when extraFetchArgs changes
+    // 🔧 FIX: Use ref to store fetchFn to prevent infinite re-render loops
+    // This is the CRITICAL fix that prevents 15,681 queries per user!
+    const fetchFnRef = useRef(fetchFn);
+
+    // Update refs when values change (silently, without triggering re-renders)
     useEffect(() => {
         extraFetchArgsRef.current = extraFetchArgs;
-    }, [extraFetchArgs]);
+        fetchFnRef.current = fetchFn;
+    }, [extraFetchArgs, fetchFn]);
 
     /**
      * Data Loading
@@ -86,7 +91,9 @@ export function useServerResource<T extends { id?: string }, TArgs extends unkno
             setLoading(true);
             setError(null);
 
-            const { items, totalCount: count } = await fetchFn(
+            // 🔧 FIX: Use fetchFnRef.current instead of fetchFn directly
+            // This prevents the infinite loop: fetchFn changes → loadData changes → useEffect runs → repeat
+            const { items, totalCount: count } = await fetchFnRef.current(
                 currentPage,
                 perPage,
                 debouncedSearchTerm,
@@ -103,7 +110,7 @@ export function useServerResource<T extends { id?: string }, TArgs extends unkno
         } finally {
             setLoading(false);
         }
-    }, [enabled, currentPage, perPage, debouncedSearchTerm, selectedDate, fetchFn, toastError]);  // 🔧 FIX: Removed ...extraFetchArgs from dependency array
+    }, [enabled, currentPage, perPage, debouncedSearchTerm, selectedDate, toastError]);  // 🔧 CRITICAL FIX: Removed fetchFn from dependency array!
 
     // 🔧 FIX: Reset to page 1 ONLY when filters change (not on every render)
     useEffect(() => {

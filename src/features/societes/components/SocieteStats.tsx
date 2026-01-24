@@ -16,13 +16,12 @@ interface SocieteStatsProps {
  */
 export default function SocieteStats({ solde, totalTransactions }: SocieteStatsProps) {
     const isDebt = solde.solde_actuel < 0;
-    const absSolde = Math.abs(solde.solde_actuel);
 
     return (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
             <StatCard
                 label="Solde Actuel"
-                amount={absSolde}
+                amount={solde.solde_actuel}
                 icon={isDebt ? TrendingDown : TrendingUp}
                 color={isDebt ? 'red' : 'green'}
                 suffix="DH"

@@ -14,6 +14,16 @@
   --color-border: var(--border);
   --color-main: var(--text-main);
   --color-muted: var(--text-muted);
+
+  /* Specific Entities */
+  --color-client: var(--entity-client);
+  --color-societe: var(--entity-societe);
+
+  /* Activity Colors */
+  --color-avance: var(--activity-avance);
+  --color-gasoil: var(--activity-gasoil);
+  --color-avance-text: var(--activity-avance);
+  --color-gasoil-text: var(--activity-gasoil);
 }
 
 :root {
@@ -22,6 +32,18 @@
   --border: #e2e8f0;
   --text-main: #0f172a;
   --text-muted: #64748b;
+
+  /* Entity Colors */
+  --entity-client: #10b981;
+  /* Emerald 500 */
+  --entity-societe: #ef4444;
+  /* Red 500 */
+
+  /* Activity Colors */
+  --activity-avance: #10b981;
+  /* Green/Emerald */
+  --activity-gasoil: #ef4444;
+  /* Red */
 
   font-family: var(--font-sans);
   line-height: 1.5;
@@ -37,6 +59,16 @@
   --border: #1e293b;
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
+
+  --entity-client: #34d399;
+  /* Light Emerald */
+  --entity-societe: #ee1818;
+  /* Light Red */
+
+  --activity-avance: #34d399;
+  /* Light Emerald */
+  --activity-gasoil: #ee1818;
+  /* Light Red */
 
   color: var(--text-main);
   background-color: var(--background);

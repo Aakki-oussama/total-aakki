@@ -18,9 +18,9 @@ export const clientService = {
         const { start, end } = getPaginationRange(page, perPage);
 
         let query = supabase
-            .from('client')
-            .select('*, solde(solde_actuel, total_avances, total_gasoil)', { count: 'exact' })
-            .is('deleted_at', null);
+            .from('view_clients_avec_solde')
+            .select('*', { count: 'exact' });
+        // .is('deleted_at', null); // View already handles deleted_at checks
 
         if (searchTerm.trim()) {
             query = query.or(`nom.ilike.%${searchTerm}%,prenom.ilike.%${searchTerm}%`);
@@ -49,17 +49,14 @@ export const clientService = {
         baseService.softDelete('client', id),
 
     async getClientById(id: string) {
-        // 1. Récupérer le client et son solde
+        // 1. Récupérer le client et son solde via la VUE
         const clientQuery = supabase
-            .from('client')
-            .select(`
-                *,
-                solde:solde(solde_actuel, total_avances, total_gasoil)
-            `)
+            .from('view_clients_avec_solde')
+            .select('*')
             .eq('id', id)
             .single();
 
-        // 2. Récupérer le nombre total de transactions gasoil
+        // 2. Récupérer le nombre total de transactions gasoil (Table Gasoil)
         const gasoilCountQuery = supabase
             .from('gasoil')
             .select('*', { count: 'exact', head: true })
@@ -70,14 +67,21 @@ export const clientService = {
 
         if (clientRes.error) throw clientRes.error;
 
-        // Formater le résultat avec sécurité sur le solde et ajout du count
+        // Formater le résultat pour matcher l'interface attendue par le Frontend
+        // Le frontend attend un objet 'solde' imbriqué
         const data = clientRes.data;
         const result = {
-            ...data,
+            id: data.id,
+            nom: data.nom,
+            prenom: data.prenom,
+            created_at: data.created_at,
+            updated_at: data.updated_at,
             total_transactions: gasoilRes.count || 0,
-            solde: Array.isArray(data.solde)
-                ? (data.solde[0] || { solde_actuel: 0, total_avances: 0, total_gasoil: 0 })
-                : (data.solde || { solde_actuel: 0, total_avances: 0, total_gasoil: 0 })
+            solde: {
+                solde_actuel: data.solde_actuel,
+                total_avances: data.total_avances,
+                total_gasoil: data.total_gasoil
+            }
         };
 
         return result;

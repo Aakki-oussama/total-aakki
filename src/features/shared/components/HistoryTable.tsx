@@ -74,7 +74,7 @@ export default function HistoryTable({ history, loading, entityName = 'ce béné
             render: (item) => (
                 <span className={`text-sm font-black ${item.solde_ligne < 0 ? 'text-red-600' : 'text-emerald-600'
                     }`}>
-                    {Math.abs(item.solde_ligne).toLocaleString('fr-FR')} DH
+                    {item.solde_ligne.toLocaleString('fr-FR')} DH
                 </span>
             )
         }
