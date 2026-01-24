@@ -5,12 +5,12 @@ import PageLayout from './components/layout/PageLayout';
 import { Spinner } from '@/components/shared/ui'; // Import helper spinner
 
 // 2. Lazy load pages - Code Splitting
-const ClientsPage = lazy(() => import('./pages/clients'));
+import ClientsPage from './pages/clients'; // Pas d'import dynamique pour les pages de base si on veut éviter le suspense
 const SocietesPage = lazy(() => import('./pages/societes'));
 const SocieteViewPage = lazy(() => import('./pages/societes/view'));
 const AvancesPage = lazy(() => import('./pages/transactions/avances'));
 const GasoilPage = lazy(() => import('./pages/transactions/gasoil'));
-const DashboardPage = lazy(() => import('./pages/dashboard'));
+import DashboardPage from './pages/dashboard';
 const ClientView = lazy(() => import('./pages/clients/view'));
 
 function App() {

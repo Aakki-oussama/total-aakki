@@ -1,37 +1,19 @@
-import { useState, useEffect } from 'react';
 import { AlertTriangle, Users, Building2 } from 'lucide-react';
-import { dashboardService, type DebtSplit } from '../services/dashboardService';
+import type { DebtSplit } from '../services/dashboardService';
 import { iconConfig } from '@/config/icons';
+import { Card } from '@/components/shared/ui';
+import { formatCurrency } from '@/lib/supabase/helpers';
+
+interface DebtSplitCardProps {
+    data: DebtSplit | null;
+}
 
 /**
  * COMPONENT: DebtSplitCard
  * Displays debt split between Clients and Sociétés with visual bar and percentages
- * Similar design to DashboardChargesSplit
  */
-const DebtSplitCard = () => {
-    const [loading, setLoading] = useState(true);
-    const [data, setData] = useState<DebtSplit>({
-        clients: { count: 0, amount: 0 },
-        societes: { count: 0, amount: 0 },
-        total: 0
-    });
-
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                const debtData = await dashboardService.getDebtSplit();
-                setData(debtData);
-            } catch (error) {
-                console.error("Error fetching debt split:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
-    }, []);
-
-    if (loading) {
+const DebtSplitCard = ({ data }: DebtSplitCardProps) => {
+    if (!data) {
         return <div className="h-48 bg-muted/10 dark:bg-gray-800 rounded-3xl animate-pulse border border-border" />;
     }
 
@@ -39,7 +21,7 @@ const DebtSplitCard = () => {
     const societePercent = data.total > 0 ? (data.societes.amount / data.total) * 100 : 0;
 
     return (
-        <div className="bg-surface dark:bg-gray-800 rounded-3xl p-6 shadow-xl border border-border h-full">
+        <Card className="h-full shadow-xl" padding="md">
             {/* Header */}
             <div className="flex items-center gap-3 mb-6">
                 <div className="p-2.5 rounded-2xl bg-primary/10 text-primary border border-primary/20">
@@ -82,7 +64,7 @@ const DebtSplitCard = () => {
                             </div>
                         </div>
                         <div className="text-sm font-black text-main">
-                            {data.clients.amount.toLocaleString('fr-FR')} <span className="text-[10px] text-muted uppercase">DH</span>
+                            {formatCurrency(data.clients.amount)}
                         </div>
                     </div>
 
@@ -99,12 +81,12 @@ const DebtSplitCard = () => {
                             </div>
                         </div>
                         <div className="text-sm font-black text-main">
-                            {data.societes.amount.toLocaleString('fr-FR')} <span className="text-[10px] text-muted uppercase">DH</span>
+                            {formatCurrency(data.societes.amount)}
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </Card>
     );
 };
 

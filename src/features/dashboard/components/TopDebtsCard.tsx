@@ -1,37 +1,20 @@
-import { useState, useEffect } from 'react';
-import { AlertCircle, User, Building2 } from 'lucide-react';
-import { dashboardService } from '../services/dashboardService';
+import { AlertCircle, User, Building2, TrendingDown } from 'lucide-react';
 import type { Impaye } from '@/types/views';
 import { iconConfig } from '@/config/icons';
+import { Card, EmptyState } from '@/components/shared/ui';
+import { formatCurrency } from '@/lib/supabase/helpers';
+
+interface TopDebtsCardProps {
+    debts: Impaye[];
+}
 
 /**
  * COMPONENT: TopDebtsCard (Red List)
  * Affiche les 5 plus grosses dettes (clients ou sociétés) sur le dashboard.
  */
-const TopDebtsCard = () => {
-    const [loading, setLoading] = useState(true);
-    const [debts, setDebts] = useState<Impaye[]>([]);
-
-    useEffect(() => {
-        const fetchDebts = async () => {
-            try {
-                const data = await dashboardService.getTopDebts();
-                setDebts(data);
-            } catch (error) {
-                console.error("Error fetching top debts:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchDebts();
-    }, []);
-
-    if (loading) {
-        return <div className="h-[400px] bg-surface rounded-3xl animate-pulse border border-border" />;
-    }
-
+const TopDebtsCard = ({ debts }: TopDebtsCardProps) => {
     return (
-        <div className="bg-surface rounded-3xl p-6 border border-border h-full shadow-sm">
+        <Card className="h-full shadow-sm" padding="md">
             {/* Simple Header */}
             <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 rounded-xl bg-primary/10 text-primary">
@@ -60,16 +43,19 @@ const TopDebtsCard = () => {
                             </div>
                         </div>
                         <div className="text-sm font-black text-societe">
-                            {debt.montant_du.toLocaleString('fr-FR')} DH
+                            {formatCurrency(debt.montant_du)}
                         </div>
                     </div>
                 )) : (
-                    <div className="py-10 text-center text-muted text-sm font-medium">
-                        Aucun impayé à afficher
-                    </div>
+                    <EmptyState
+                        icon={TrendingDown}
+                        title="Tout est à jour"
+                        description="Aucune dette importante à signaler pour le moment."
+                        className="border-none py-10"
+                    />
                 )}
             </div>
-        </div>
+        </Card>
     );
 };
 

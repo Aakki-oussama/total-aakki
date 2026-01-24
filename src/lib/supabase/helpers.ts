@@ -45,9 +45,8 @@ export function formatDateShort(isoDate: string): string {
  * @returns Montant formaté (ex: "1 500,00 DH")
  */
 export function formatCurrency(amount: number): string {
-    return new Intl.NumberFormat('fr-MA', {
-        style: 'currency',
-        currency: 'MAD',
+    return new Intl.NumberFormat('fr-FR', {
         minimumFractionDigits: 2,
-    }).format(amount);
+        maximumFractionDigits: 2,
+    }).format(amount) + ' DH';
 }

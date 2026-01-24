@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
+import { Users } from 'lucide-react';
 import type { Client } from '@/types/tables';
-import { DataTable, TableActions } from '@/components/shared/ui';
+import { DataTable, TableActions, EmptyState } from '@/components/shared/ui';
+import { formatCurrency, formatDateShort } from '@/lib/supabase/helpers';
 
 interface ClientTableProps<T extends Client = Client> {
     clients: T[];
@@ -33,14 +35,13 @@ export default function ClientTable<T extends Client>({
         {
             header: 'Solde',
             render: (client: T) => {
-                // Strict typing: Cast to extended interface
                 const clientData = client as unknown as ClientWithSolde;
                 const solde = clientData.solde_actuel || 0;
                 const colorClass = solde < 0 ? 'text-red-600' : 'text-emerald-600';
 
                 return (
                     <span className={`font-bold ${colorClass}`}>
-                        {solde.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} DH
+                        {formatCurrency(solde)}
                     </span>
                 );
             }
@@ -49,11 +50,7 @@ export default function ClientTable<T extends Client>({
             header: 'Date d\'ajout',
             render: (client: T) => (
                 <span className="text-muted font-medium">
-                    {new Date(client.created_at).toLocaleDateString('fr-FR', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                    })}
+                    {formatDateShort(client.created_at)}
                 </span>
             )
         },
@@ -76,9 +73,11 @@ export default function ClientTable<T extends Client>({
             columns={columns}
             loading={loading}
             emptyState={
-                <div className="py-20 text-center">
-                    <p className="text-muted font-medium">Aucun client trouvé.</p>
-                </div>
+                <EmptyState
+                    icon={Users}
+                    title="Aucun client trouvé"
+                    description="Votre recherche n'a retourné aucun profil client."
+                />
             }
         />
     );

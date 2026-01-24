@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
 import { Fuel, User, Building2 } from 'lucide-react';
-import { DataTable, TableActions } from '@/components/shared/ui';
+import { DataTable, TableActions, EmptyState } from '@/components/shared/ui';
 import type { GasoilWithDetails } from '../services/gasoilService';
 import { iconConfig } from '@/config/icons';
+import { formatCurrency, formatDateShort } from '@/lib/supabase/helpers';
 
 interface GasoilTableProps {
     data: GasoilWithDetails[];
@@ -22,11 +23,7 @@ export function GasoilTable({ data, loading, onEdit, onDelete }: GasoilTableProp
             render: (item: GasoilWithDetails) => (
                 <div className="flex flex-col text-left font-medium text-muted">
                     <span>
-                        {item.date_gasoil ? new Date(item.date_gasoil).toLocaleDateString('fr-FR', {
-                            day: '2-digit',
-                            month: 'long',
-                            year: 'numeric'
-                        }) : '-'}
+                        {item.date_gasoil ? formatDateShort(item.date_gasoil) : '-'}
                     </span>
                 </div>
             )
@@ -62,8 +59,7 @@ export function GasoilTable({ data, loading, onEdit, onDelete }: GasoilTableProp
             render: (item: GasoilWithDetails) => (
                 <div className="flex items-center gap-1.5 font-bold text-amber-600">
                     <Fuel className={iconConfig.sizes.breadcrumb} strokeWidth={iconConfig.strokeWidth} />
-                    <span className="text-base">{Number(item.montant).toLocaleString('fr-FR')}</span>
-                    <span className="text-[10px] font-medium opacity-60">DH</span>
+                    <span className="text-base">{formatCurrency(Number(item.montant))}</span>
                 </div>
             )
         },
@@ -85,9 +81,11 @@ export function GasoilTable({ data, loading, onEdit, onDelete }: GasoilTableProp
             data={data}
             loading={loading}
             emptyState={
-                <div className="py-20 text-center border border-dashed border-border rounded-xl">
-                    <p className="text-muted font-medium">Aucune consommation de gasoil trouvée.</p>
-                </div>
+                <EmptyState
+                    icon={Fuel}
+                    title="Aucune consommation trouvée"
+                    description="Il n'y a pas encore de consommations de gasoil enregistrées."
+                />
             }
         />
     );

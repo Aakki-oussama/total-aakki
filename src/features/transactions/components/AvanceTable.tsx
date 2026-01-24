@@ -1,8 +1,9 @@
 import { useMemo } from 'react';
-import { DataTable, TableActions, Badge } from '@/components/shared/ui';
+import { DataTable, TableActions, Badge, EmptyState } from '@/components/shared/ui';
 import type { AvanceWithDetails } from '../services/avanceService';
-import { User, Building2 } from 'lucide-react';
+import { User, Building2, Wallet } from 'lucide-react';
 import { iconConfig } from '@/config/icons';
+import { formatCurrency, formatDateShort } from '@/lib/supabase/helpers';
 
 interface AvanceTableProps {
     avances: AvanceWithDetails[];
@@ -26,11 +27,7 @@ export default function AvanceTable({
             header: 'Date',
             render: (avance: AvanceWithDetails) => (
                 <span className="text-muted font-medium">
-                    {new Date(avance.date_avance).toLocaleDateString('fr-FR', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                    })}
+                    {formatDateShort(avance.date_avance)}
                 </span>
             )
         },
@@ -65,7 +62,7 @@ export default function AvanceTable({
             className: 'font-mono',
             render: (avance: AvanceWithDetails) => (
                 <span className="text-sm font-bold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded">
-                    {Number(avance.montant).toLocaleString('fr-FR')} DH
+                    {formatCurrency(Number(avance.montant))}
                 </span>
             )
         },
@@ -99,9 +96,11 @@ export default function AvanceTable({
             columns={columns}
             loading={loading}
             emptyState={
-                <div className="py-20 text-center">
-                    <p className="text-muted font-medium">Aucun paiement trouvé.</p>
-                </div>
+                <EmptyState
+                    icon={Wallet}
+                    title="Aucun paiement trouvé"
+                    description="Il n'y a pas encore de paiements enregistrés ou votre recherche est vide."
+                />
             }
         />
     );

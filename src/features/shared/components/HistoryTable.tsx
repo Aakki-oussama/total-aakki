@@ -1,7 +1,8 @@
 import { Fuel, Wallet, ArrowRightLeft } from 'lucide-react';
-import { DataTable } from '@/components/shared/ui';
+import { DataTable, EmptyState } from '@/components/shared/ui';
 import type { Column } from '@/components/shared/ui/DataTable';
 import type { HistoryItem } from '@/types/views';
+import { formatCurrency, formatDateShort } from '@/lib/supabase/helpers';
 
 interface HistoryTableProps {
     history: HistoryItem[];
@@ -21,11 +22,7 @@ export default function HistoryTable({ history, loading, entityName = 'ce béné
             header: 'Date',
             render: (item) => (
                 <span className="text-sm font-bold text-main">
-                    {new Date(item.date_operation).toLocaleDateString('fr-FR', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                    })}
+                    {formatDateShort(item.date_operation)}
                 </span>
             )
         },
@@ -51,7 +48,7 @@ export default function HistoryTable({ history, loading, entityName = 'ce béné
             className: 'text-right',
             render: (item) => item.debit > 0 ? (
                 <span className="text-sm font-bold text-red-600">
-                    -{item.debit.toLocaleString('fr-FR')} DH
+                    -{formatCurrency(item.debit)}
                 </span>
             ) : (
                 <span className="text-muted/30">—</span>
@@ -62,7 +59,7 @@ export default function HistoryTable({ history, loading, entityName = 'ce béné
             className: 'text-right',
             render: (item) => item.credit > 0 ? (
                 <span className="text-sm font-bold text-emerald-600">
-                    +{item.credit.toLocaleString('fr-FR')} DH
+                    +{formatCurrency(item.credit)}
                 </span>
             ) : (
                 <span className="text-muted/30">—</span>
@@ -74,28 +71,24 @@ export default function HistoryTable({ history, loading, entityName = 'ce béné
             render: (item) => (
                 <span className={`text-sm font-black ${item.solde_ligne < 0 ? 'text-red-600' : 'text-emerald-600'
                     }`}>
-                    {item.solde_ligne.toLocaleString('fr-FR')} DH
+                    {formatCurrency(item.solde_ligne)}
                 </span>
             )
         }
     ];
-
-    const emptyState = (
-        <div className="py-20 text-center">
-            <ArrowRightLeft className="mx-auto h-12 w-12 text-muted/30 mb-4" />
-            <h3 className="text-xl font-bold text-main">Aucun historique</h3>
-            <p className="text-muted max-w-sm mx-auto mt-2 text-sm">
-                Aucune transaction (Gasoil ou Paiement) n'a été enregistrée pour {entityName}.
-            </p>
-        </div>
-    );
 
     return (
         <DataTable
             data={history}
             columns={columns}
             loading={loading}
-            emptyState={emptyState}
+            emptyState={
+                <EmptyState
+                    icon={ArrowRightLeft}
+                    title="Aucun historique"
+                    description={`Aucune transaction (Gasoil ou Paiement) n'a été enregistrée pour ${entityName}.`}
+                />
+            }
         />
     );
 }

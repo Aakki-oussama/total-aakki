@@ -6,6 +6,7 @@
 interface SpinnerProps {
     size?: 'sm' | 'md' | 'lg';
     variant?: 'primary' | 'white' | 'muted';
+    label?: string;
     className?: string;
     fullScreen?: boolean;
 }
@@ -13,6 +14,7 @@ interface SpinnerProps {
 export default function Spinner({
     size = 'md',
     variant = 'primary',
+    label = 'Synchronisation des données...',
     className = '',
     fullScreen = false
 }: SpinnerProps) {
@@ -29,25 +31,32 @@ export default function Spinner({
         muted: 'border-muted/20 border-t-muted/60'
     };
 
-    const spinner = (
-        <div
-            className={`
-        rounded-full animate-spin 
-        ${sizeClasses[size]} 
-        ${variantClasses[variant]} 
-        ${className}
-      `}
-            role="status"
-        />
+    const content = (
+        <div className="flex flex-col items-center gap-4">
+            <div
+                className={`
+                    rounded-full animate-spin 
+                    ${sizeClasses[size]} 
+                    ${variantClasses[variant]} 
+                    ${className}
+                `}
+                role="status"
+            />
+            {label && (
+                <p className="text-[10px] md:text-xs font-black text-muted uppercase tracking-widest animate-pulse">
+                    {label}
+                </p>
+            )}
+        </div>
     );
 
     if (fullScreen) {
         return (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-surface/60 backdrop-blur-sm">
-                {spinner}
+                {content}
             </div>
         );
     }
 
-    return spinner;
+    return content;
 }

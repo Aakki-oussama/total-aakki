@@ -1,22 +1,16 @@
 import { Users, Building2, Fuel, Wallet } from 'lucide-react';
-import { StatCard, Spinner } from '@/components/shared/ui';
-import { useDashboard } from '../hooks/useDashboard';
+import { StatCard } from '@/components/shared/ui';
+import type { DashboardGlobal } from '@/types/views';
+
+interface DashboardStatsUIProps {
+    stats: DashboardGlobal | null;
+}
 
 /**
  * COMPONENT: DashboardStatsUI
  * Affiche les 4 cartes principales demandées : Gasoil, Avances, Clients, Sociétés.
  */
-export default function DashboardStatsUI() {
-    const { stats, loading } = useDashboard();
-
-    if (loading) {
-        return (
-            <div className="flex justify-center p-12">
-                <Spinner size="lg" />
-            </div>
-        );
-    }
-
+export default function DashboardStatsUI({ stats }: DashboardStatsUIProps) {
     if (!stats) return null;
 
     return (
@@ -28,7 +22,6 @@ export default function DashboardStatsUI() {
                     amount={stats.gasoil_mois || 0}
                     icon={Fuel}
                     color="orange"
-                    suffix="DH"
                     description="Consommation crédit"
                 />
 
@@ -38,7 +31,6 @@ export default function DashboardStatsUI() {
                     amount={stats.avances_mois || 0}
                     icon={Wallet}
                     color="green"
-                    suffix="DH"
                     description="Argent encaissé"
                 />
 
@@ -48,8 +40,7 @@ export default function DashboardStatsUI() {
                     amount={stats.total_clients || 0}
                     icon={Users}
                     color="blue"
-                    suffix=""
-                    showDecimals={false}
+                    isCurrency={false}
                     description="Particuliers actifs"
                 />
 
@@ -59,8 +50,7 @@ export default function DashboardStatsUI() {
                     amount={stats.total_societes || 0}
                     icon={Building2}
                     color="purple"
-                    suffix=""
-                    showDecimals={false}
+                    isCurrency={false}
                     description="Entreprises"
                 />
             </div>

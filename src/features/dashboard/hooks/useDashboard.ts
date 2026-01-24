@@ -1,22 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
-import { dashboardService } from '../services/dashboardService';
-import type { DashboardGlobal } from '@/types/views';
+import { dashboardService, type DashboardPack } from '../services/dashboardService';
 import { useToast } from '@/context/toast/useToast';
 
 /**
  * HOOK: useDashboard
- * Gère l'état et le chargement des statistiques globales.
+ * Centralisé: Gère tout le chargement du Dashboard en UN SEUL APPEL.
  */
 export function useDashboard() {
-    const [stats, setStats] = useState<DashboardGlobal | null>(null);
+    const [data, setData] = useState<DashboardPack | null>(null);
     const [loading, setLoading] = useState(true);
     const { error } = useToast();
 
-    const fetchStats = useCallback(async () => {
+    const fetchAllData = useCallback(async () => {
         try {
             setLoading(true);
-            const data = await dashboardService.getGlobalStats();
-            setStats(data);
+            const pack = await dashboardService.getDashboardPack();
+            setData(pack);
         } catch (err) {
             console.error(err);
             error("Erreur lors du chargement du tableau de bord");
@@ -26,12 +25,15 @@ export function useDashboard() {
     }, [error]);
 
     useEffect(() => {
-        fetchStats();
-    }, [fetchStats]);
+        fetchAllData();
+    }, [fetchAllData]);
 
     return {
-        stats,
+        stats: data?.stats || null,
+        topDebts: data?.top_debts || [],
+        debtSplit: data?.debt_split || null,
+        timeline: data?.timeline || [],
         loading,
-        refresh: fetchStats
+        refresh: fetchAllData
     };
 }

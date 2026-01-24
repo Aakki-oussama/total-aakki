@@ -1,5 +1,7 @@
 import { memo } from 'react';
 import type { LucideIcon } from 'lucide-react';
+import { formatCurrency } from '@/lib/supabase/helpers';
+import { iconConfig } from '@/config/icons';
 
 export interface StatCardProps {
     label: string;
@@ -7,8 +9,7 @@ export interface StatCardProps {
     icon: LucideIcon;
     color: 'blue' | 'green' | 'red' | 'purple' | 'orange' | 'cyan';
     loading?: boolean;
-    suffix?: string;
-    showDecimals?: boolean;
+    isCurrency?: boolean;
     description?: string;
 }
 
@@ -22,8 +23,7 @@ const StatCard = ({
     icon: Icon,
     color,
     loading = false,
-    suffix = 'DH',
-    showDecimals = false,
+    isCurrency = true,
     description
 }: StatCardProps) => {
 
@@ -57,25 +57,36 @@ const StatCard = ({
             {/* 1. Header with Icon and Label */}
             <div className="flex items-center gap-2 md:gap-3">
                 <div className={`p-1.5 md:p-2.5 rounded-xl md:rounded-2xl ${colorClasses[color]} border-2 border-surface shadow-sm flex-shrink-0`}>
-                    <Icon className="w-4 h-4 md:w-5 md:h-5" />
+                    <Icon className={iconConfig.sizes.header} strokeWidth={iconConfig.strokeWidth} />
                 </div>
                 <span className="text-[9px] md:text-xs font-black text-muted uppercase tracking-widest truncate">
                     {label}
                 </span>
             </div>
 
-            {/* 2. Amount and Currency */}
+            {/* 2. Amount and Currency - Split for Responsiveness & Design */}
             <div className="flex flex-col">
                 <div className="flex items-baseline gap-1">
-                    <span className="text-lg md:text-2xl font-black text-main leading-none">
-                        {amount.toLocaleString('fr-FR', {
-                            minimumFractionDigits: showDecimals ? 2 : 0,
-                            maximumFractionDigits: showDecimals ? 2 : 0
-                        })}
-                    </span>
-                    {suffix && (
-                        <span className="text-[8px] md:text-xs font-bold text-muted uppercase">
-                            {suffix}
+                    {isCurrency ? (() => {
+                        const fullFormat = formatCurrency(amount);
+                        // Séparer le chiffre de l'unité (DH ou MAD)
+                        const parts = fullFormat.split(/(\s+[^0-9,.\s]+$)/);
+                        const value = parts[0];
+                        const unit = parts[1] || '';
+
+                        return (
+                            <>
+                                <span className="text-xl md:text-2xl font-black text-main leading-none">
+                                    {value}
+                                </span>
+                                <span className="text-[10px] md:text-xs font-bold text-muted uppercase">
+                                    {unit.trim()}
+                                </span>
+                            </>
+                        );
+                    })() : (
+                        <span className="text-xl md:text-2xl font-black text-main leading-none">
+                            {new Intl.NumberFormat('fr-FR').format(amount)}
                         </span>
                     )}
                 </div>

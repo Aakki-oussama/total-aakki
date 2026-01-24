@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
-import { TableActions, DataTable } from '@/components/shared/ui';
+import { Building2 } from 'lucide-react';
+import { TableActions, DataTable, EmptyState } from '@/components/shared/ui';
 import type { Societe } from '@/types/tables';
+import { formatCurrency, formatDateShort } from '@/lib/supabase/helpers';
 
 interface SocieteTableProps {
     societes: Societe[];
@@ -37,7 +39,7 @@ export default function SocieteTable({
 
                 return (
                     <span className={`font-bold ${colorClass}`}>
-                        {solde.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} DH
+                        {formatCurrency(solde)}
                     </span>
                 );
             }
@@ -45,14 +47,9 @@ export default function SocieteTable({
         {
             header: 'Date de Création',
             render: (societe: Societe) => {
-                const date = new Date(societe.created_at || '');
                 return (
                     <span className="text-muted font-medium">
-                        {date.toLocaleDateString('fr-FR', {
-                            day: '2-digit',
-                            month: 'short',
-                            year: 'numeric'
-                        })}
+                        {formatDateShort(societe.created_at || '')}
                     </span>
                 );
             }
@@ -77,9 +74,11 @@ export default function SocieteTable({
             columns={columns}
             loading={loading}
             emptyState={
-                <div className="py-20 text-center">
-                    <p className="text-muted font-medium">Aucune société trouvée.</p>
-                </div>
+                <EmptyState
+                    icon={Building2}
+                    title="Aucune société trouvée"
+                    description="Votre recherche n'a retourné aucun profil de société."
+                />
             }
         />
     );
