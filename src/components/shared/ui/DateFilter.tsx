@@ -8,15 +8,12 @@ interface DateFilterProps {
     className?: string;
 }
 
+const MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
+const WEEKDAYS = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+
 /**
  * COMPONENT: DateFilter (The "Zero-Failure" Version)
  * Industry standard approach: Custom grid calendar.
- * Guaranteed to work on iOS, Android, and PC.
- * Features:
- * - Direct toggle (open/close)
- * - Timezone-safe date parsing
- * - Responsive grid layout
- * - Unified design system styling
  */
 const parseDate = (date: string) => new Date(`${date}T00:00:00`);
 
@@ -33,13 +30,14 @@ export default function DateFilter({
         date ? parseDate(date) : new Date()
     );
 
-    const months = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"];
-    const weekdays = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
-
-    // Sync view with external date selection
-    useEffect(() => {
-        if (date) setViewDate(parseDate(date));
-    }, [date]);
+    // Track the date prop to adjust viewDate when it changes externally
+    const [prevDate, setPrevDate] = useState(date);
+    if (date !== prevDate) {
+        setPrevDate(date);
+        if (date) {
+            setViewDate(parseDate(date));
+        }
+    }
 
     // Handle outside clicks and keyboard
     useEffect(() => {
@@ -128,7 +126,7 @@ export default function DateFilter({
                         <button onClick={() => changeMonth(-1)} className="p-1.5 hover:bg-muted/10 rounded-lg text-muted transition-colors">
                             <ChevronLeft className={iconConfig.sizes.xs} strokeWidth={iconConfig.strokeWidth} />
                         </button>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-main">{months[viewDate.getMonth()]} {viewDate.getFullYear()}</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-main">{MONTHS[viewDate.getMonth()]} {viewDate.getFullYear()}</span>
                         <button onClick={() => changeMonth(1)} className="p-1.5 hover:bg-muted/10 rounded-lg text-muted transition-colors">
                             <ChevronRight className={iconConfig.sizes.xs} strokeWidth={iconConfig.strokeWidth} />
                         </button>
@@ -136,7 +134,7 @@ export default function DateFilter({
 
                     {/* Week Days */}
                     <div className="grid grid-cols-7 text-center mb-1">
-                        {weekdays.map(w => <span key={w} className="text-[8px] font-black text-muted uppercase">{w}</span>)}
+                        {WEEKDAYS.map(w => <span key={w} className="text-[8px] font-black text-muted uppercase">{w}</span>)}
                     </div>
 
                     {/* Days Grid */}
