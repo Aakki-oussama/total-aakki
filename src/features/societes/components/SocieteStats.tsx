@@ -24,29 +24,29 @@ export default function SocieteStats({ solde, totalTransactions }: SocieteStatsP
                 amount={solde.solde_actuel}
                 icon={isDebt ? TrendingDown : TrendingUp}
                 color={isDebt ? 'red' : 'green'}
-                suffix="DH"
+                isCurrency={true}
             />
             <StatCard
                 label="Total Gasoil"
                 amount={solde.total_gasoil || 0}
                 icon={Fuel}
                 color="orange"
-                suffix="DH"
+                isCurrency={true}
             />
             <StatCard
                 label="Total Payé"
                 amount={solde.total_avances || 0}
                 icon={Wallet}
                 color="blue"
-                suffix="DH"
+                isCurrency={true}
             />
             <StatCard
                 label="Transactions"
                 amount={totalTransactions || 0}
                 icon={ClipboardCheck}
                 color="purple"
-                suffix="OPS"
-                showDecimals={false}
+                isCurrency={false}
+                description="Opérations"
             />
         </div>
     );

@@ -27,7 +27,7 @@ export default function ClientStats({ solde, totalTransactions }: ClientStatsPro
                 amount={solde.solde_actuel}
                 icon={isDebt ? TrendingDown : TrendingUp}
                 color={isDebt ? 'red' : 'green'}
-                suffix="DH"
+                isCurrency={true}
             />
 
             {/* 2. Total Gasoil */}
@@ -36,7 +36,7 @@ export default function ClientStats({ solde, totalTransactions }: ClientStatsPro
                 amount={solde.total_gasoil || 0}
                 icon={Fuel}
                 color="orange"
-                suffix="DH"
+                isCurrency={true}
             />
 
             {/* 3. Total Paiements */}
@@ -45,7 +45,7 @@ export default function ClientStats({ solde, totalTransactions }: ClientStatsPro
                 amount={solde.total_avances || 0}
                 icon={Wallet}
                 color="blue"
-                suffix="DH"
+                isCurrency={true}
             />
 
             {/* 4. Activité (Transactions) */}
@@ -54,8 +54,8 @@ export default function ClientStats({ solde, totalTransactions }: ClientStatsPro
                 amount={totalTransactions || 0}
                 icon={ClipboardCheck}
                 color="purple"
-                suffix="OPS"
-                showDecimals={false}
+                isCurrency={false}
+                description="Opérations totales"
             />
         </div>
     );
