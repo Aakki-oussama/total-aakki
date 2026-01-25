@@ -5,6 +5,7 @@ import { iconConfig } from '../../../config/icons';
 interface DateFilterProps {
     date?: string; // YYYY-MM-DD
     onDateChange: (date: string) => void;
+    label?: string;
     className?: string;
 }
 
@@ -20,6 +21,7 @@ const parseDate = (date: string) => new Date(`${date}T00:00:00`);
 export default function DateFilter({
     date,
     onDateChange,
+    label = "Filtrer par date",
     className = ""
 }: DateFilterProps) {
     const [isOpen, setIsOpen] = useState(false);
@@ -109,7 +111,8 @@ export default function DateFilter({
                     ${isOpen ? 'border-primary ring-2 ring-primary/10 bg-surface' : 'border-border/60 bg-surface/80 hover:bg-surface'}
                     ${date ? 'border-primary/50 bg-primary/5' : ''}
                 `}
-                aria-label="Choisir une date"
+                title={label}
+                aria-label={label}
             >
                 <CalendarIcon
                     className={`${iconConfig.sizes.breadcrumb} ${date ? 'text-primary' : 'text-muted'} group-hover:text-primary transition-colors`}
