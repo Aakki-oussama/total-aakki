@@ -31,8 +31,8 @@ export default function HistoryTable({ history, loading, entityName = 'ce béné
             render: (item) => (
                 <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-xl flex-shrink-0 ${item.type === 'GASOIL'
-                        ? 'bg-orange-500/10 text-orange-600'
-                        : 'bg-blue-500/10 text-blue-600'
+                        ? 'bg-warning/10 text-warning'
+                        : 'bg-info/10 text-info'
                         }`}>
                         {item.type === 'GASOIL' ? <Fuel size={18} /> : <Wallet size={18} />}
                     </div>
@@ -45,9 +45,8 @@ export default function HistoryTable({ history, loading, entityName = 'ce béné
         },
         {
             header: 'Débit (-)',
-            className: 'text-right',
             render: (item) => item.debit > 0 ? (
-                <span className="text-sm font-bold text-red-600">
+                <span className="text-sm font-bold text-danger">
                     -{formatCurrency(item.debit)}
                 </span>
             ) : (
@@ -56,9 +55,8 @@ export default function HistoryTable({ history, loading, entityName = 'ce béné
         },
         {
             header: 'Crédit (+)',
-            className: 'text-right',
             render: (item) => item.credit > 0 ? (
-                <span className="text-sm font-bold text-emerald-600">
+                <span className="text-sm font-bold text-success">
                     +{formatCurrency(item.credit)}
                 </span>
             ) : (
@@ -67,9 +65,8 @@ export default function HistoryTable({ history, loading, entityName = 'ce béné
         },
         {
             header: 'Solde',
-            className: 'text-right',
             render: (item) => (
-                <span className={`text-sm font-black ${item.solde_ligne < 0 ? 'text-red-600' : 'text-emerald-600'
+                <span className={`text-sm font-black ${item.solde_ligne < 0 ? 'text-danger' : 'text-success'
                     }`}>
                     {formatCurrency(item.solde_ligne)}
                 </span>

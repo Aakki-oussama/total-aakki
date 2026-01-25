@@ -15,6 +15,12 @@
   --color-main: var(--text-main);
   --color-muted: var(--text-muted);
 
+  /* Functional Colors */
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+
   /* Specific Entities */
   --color-client: var(--entity-client);
   --color-societe: var(--entity-societe);
@@ -33,17 +39,23 @@
   --text-main: #0f172a;
   --text-muted: #64748b;
 
+  /* Functional */
+  --success: #10b981;
+  /* Emerald 500 */
+  --danger: #ef4444;
+  /* Red 500 */
+  --warning: #f59e0b;
+  /* Amber 500 */
+  --info: #3b82f6;
+  /* Blue 500 */
+
   /* Entity Colors */
   --entity-client: #10b981;
-  /* Emerald 500 */
   --entity-societe: #ef4444;
-  /* Red 500 */
 
   /* Activity Colors */
   --activity-avance: #10b981;
-  /* Green/Emerald */
   --activity-gasoil: #ef4444;
-  /* Red */
 
   font-family: var(--font-sans);
   line-height: 1.5;
@@ -60,15 +72,16 @@
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
 
+  --success: #34d399;
+  --danger: #f87171;
+  --warning: #fbbf24;
+  --info: #60a5fa;
+
   --entity-client: #34d399;
-  /* Light Emerald */
   --entity-societe: #ee1818;
-  /* Light Red */
 
   --activity-avance: #34d399;
-  /* Light Emerald */
   --activity-gasoil: #ee1818;
-  /* Light Red */
 
   color: var(--text-main);
   background-color: var(--background);

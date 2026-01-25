@@ -13,11 +13,21 @@ export interface DebtSplit {
     total: number;
 }
 
+export interface TimelineItem {
+    id: string;
+    date_operation: string;
+    type: 'GASOIL' | 'PAIEMENT';
+    description: string;
+    montant: number;
+    type_entite: 'CLIENT' | 'SOCIETE';
+    nom_entite: string;
+}
+
 export interface DashboardPack {
     stats: DashboardGlobal;
     top_debts: Impaye[];
     debt_split: DebtSplit;
-    timeline: any[];
+    timeline: TimelineItem[];
 }
 
 /**

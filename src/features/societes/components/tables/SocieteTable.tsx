@@ -35,7 +35,7 @@ export default function SocieteTable({
             render: (societe: Societe) => {
                 const societeWithSolde = societe as unknown as SocieteWithSolde;
                 const solde = societeWithSolde.solde_actuel || 0;
-                const colorClass = solde < 0 ? 'text-red-600' : 'text-emerald-600';
+                const colorClass = solde < 0 ? 'text-danger' : 'text-success';
 
                 return (
                     <span className={`font-bold ${colorClass}`}>

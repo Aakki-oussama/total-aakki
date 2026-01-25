@@ -37,7 +37,7 @@ export default function AvanceTable({
                 const isClient = !!avance.client;
                 return (
                     <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${isClient ? 'bg-indigo-50 text-indigo-600' : 'bg-amber-50 text-amber-600'}`}>
+                        <div className={`p-2 rounded-lg ${isClient ? 'bg-success/10 text-success' : 'bg-info/10 text-info'}`}>
                             {isClient
                                 ? <User className={iconConfig.sizes.breadcrumb} strokeWidth={iconConfig.strokeWidth} />
                                 : <Building2 className={iconConfig.sizes.breadcrumb} strokeWidth={iconConfig.strokeWidth} />
@@ -59,9 +59,8 @@ export default function AvanceTable({
         },
         {
             header: 'Montant',
-            className: 'font-mono',
             render: (avance: AvanceWithDetails) => (
-                <span className="text-sm font-bold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded">
+                <span className="text-sm font-bold text-success bg-success/10 px-2 py-1 rounded">
                     {formatCurrency(Number(avance.montant))}
                 </span>
             )

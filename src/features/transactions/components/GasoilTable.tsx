@@ -21,20 +21,18 @@ export function GasoilTable({ data, loading, onEdit, onDelete }: GasoilTableProp
         {
             header: 'Date',
             render: (item: GasoilWithDetails) => (
-                <div className="flex flex-col text-left font-medium text-muted">
-                    <span>
-                        {item.date_gasoil ? formatDateShort(item.date_gasoil) : '-'}
-                    </span>
-                </div>
+                <span className="text-muted font-medium">
+                    {item.date_gasoil ? formatDateShort(item.date_gasoil) : '-'}
+                </span>
             )
         },
         {
             header: 'Bénéficiaire',
             render: (item: GasoilWithDetails) => (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                     {item.client_id ? (
                         <>
-                            <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-600">
+                            <div className="p-2 rounded-lg bg-success/10 text-success">
                                 <User className={iconConfig.sizes.breadcrumb} strokeWidth={iconConfig.strokeWidth} />
                             </div>
                             <span className="font-bold text-main">
@@ -43,7 +41,7 @@ export function GasoilTable({ data, loading, onEdit, onDelete }: GasoilTableProp
                         </>
                     ) : (
                         <>
-                            <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600">
+                            <div className="p-2 rounded-lg bg-info/10 text-info">
                                 <Building2 className={iconConfig.sizes.breadcrumb} strokeWidth={iconConfig.strokeWidth} />
                             </div>
                             <span className="font-bold text-main">
@@ -57,9 +55,9 @@ export function GasoilTable({ data, loading, onEdit, onDelete }: GasoilTableProp
         {
             header: 'Montant',
             render: (item: GasoilWithDetails) => (
-                <div className="flex items-center gap-1.5 font-bold text-amber-600">
-                    <Fuel className={iconConfig.sizes.breadcrumb} strokeWidth={iconConfig.strokeWidth} />
-                    <span className="text-base">{formatCurrency(Number(item.montant))}</span>
+                <div className="flex items-center gap-1.5 font-bold text-warning bg-warning/10 px-2 py-1 rounded">
+                    <Fuel className={iconConfig.sizes.xs} strokeWidth={iconConfig.strokeWidth} />
+                    <span className="text-sm">{formatCurrency(Number(item.montant))}</span>
                 </div>
             )
         },

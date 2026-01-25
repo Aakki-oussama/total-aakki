@@ -37,7 +37,7 @@ export default function ClientTable<T extends Client>({
             render: (client: T) => {
                 const clientData = client as unknown as ClientWithSolde;
                 const solde = clientData.solde_actuel || 0;
-                const colorClass = solde < 0 ? 'text-red-600' : 'text-emerald-600';
+                const colorClass = solde < 0 ? 'text-danger' : 'text-success';
 
                 return (
                     <span className={`font-bold ${colorClass}`}>
