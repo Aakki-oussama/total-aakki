@@ -34,18 +34,8 @@ export default function DateFilter({
 
     return (
         <div className={`relative ${className}`}>
-            {/* Hidden native input that holds the actual value */}
-            <input
-                ref={inputRef}
-                type="date"
-                value={date || ''}
-                onChange={(e) => onDateChange(e.target.value)}
-                className="absolute inset-0 w-full h-full opacity-0 -z-10 pointer-events-none"
-            />
-
             <Button
                 variant="secondary"
-                onClick={handleButtonClick}
                 className="h-[48px] px-3 sm:px-5 rounded-xl sm:rounded-2xl flex items-center justify-center gap-2 border-border/60 shadow-sm group whitespace-nowrap bg-surface/80 hover:bg-surface transition-all"
             >
                 <CalendarIcon
@@ -61,12 +51,25 @@ export default function DateFilter({
                 {date && (
                     <div
                         onClick={handleClear}
-                        className="p-1 rounded-md hover:bg-red-50 text-muted/50 hover:text-red-500 transition-all ml-1"
+                        className="p-1 rounded-md hover:bg-red-50 text-muted/50 hover:text-red-500 transition-all ml-1 z-20"
                     >
                         <X className={iconConfig.sizes.xs} strokeWidth={iconConfig.strokeWidth} />
                     </div>
                 )}
             </Button>
+
+            {/* 
+                Hidden native input that overlays the button.
+                Tapping the button area now directly taps the native input, 
+                triggering the OS date picker reliably on mobile.
+            */}
+            <input
+                ref={inputRef}
+                type="date"
+                value={date || ''}
+                onChange={(e) => onDateChange(e.target.value)}
+                className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer"
+            />
         </div>
     );
 }
