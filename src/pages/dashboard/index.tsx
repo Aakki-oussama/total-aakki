@@ -22,7 +22,7 @@ export default function DashboardPage() {
             variant="content"
         >
             {loading ? (
-                <div className="flex items-center justify-center p-10 sm:p-20">
+                <div className="flex flex-col items-center justify-center min-h-[60vh]">
                     <Spinner size="lg" />
                 </div>
             ) : (

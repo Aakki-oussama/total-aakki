@@ -13,7 +13,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'TOTAL App - Gestion Station',
+        name: 'Total-Boumia - Gestion Station',
         short_name: 'TotalApp',
         description: 'Gestion des consommations Gasoil et Avances Clients',
         theme_color: '#ffffff',
