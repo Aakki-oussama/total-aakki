@@ -18,14 +18,9 @@ export default defineConfig({
       output: {
         // Optimisation du découpage du code (Code Splitting)
         manualChunks(id) {
-          // On isole le moteur PDF (@react-pdf/renderer) dans son propre fichier
-          // Car il pèse environ 1.5MB et n'est pas nécessaire au démarrage de l'app.
-          if (id.includes('@react-pdf')) {
-            return 'pdf-engine';
-          }
-
-          // On peut aussi isoler les autres grosses librairies dans un fichier 'vendor'
-          // pour profiter du cache du navigateur sur les outils qui ne changent jamais.
+          // On regroupe toutes les node_modules dans un fichier 'vendor'
+          // pour profiter du cache du navigateur. 
+          // Note: On ne sépare plus @react-pdf séparément pour éviter les erreurs d'initialisation circulaire.
           if (id.includes('node_modules')) {
             return 'vendor';
           }
