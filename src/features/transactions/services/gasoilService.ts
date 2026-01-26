@@ -9,6 +9,9 @@ import type { Gasoil } from '@/types/tables';
 export type GasoilWithDetails = Gasoil & {
     client: { nom: string; prenom: string } | null;
     societe: { nom_societe: string } | null;
+    client_nom?: string;
+    client_prenom?: string;
+    societe_nom?: string;
 };
 
 /**

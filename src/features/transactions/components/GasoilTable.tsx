@@ -28,29 +28,32 @@ export function GasoilTable({ data, loading, onEdit, onDelete }: GasoilTableProp
         },
         {
             header: 'Bénéficiaire',
-            render: (item: GasoilWithDetails) => (
-                <div className="flex items-center gap-3">
-                    {item.client_id ? (
-                        <>
-                            <div className="p-2 rounded-lg bg-success/10 text-success">
-                                <User className={iconConfig.sizes.breadcrumb} strokeWidth={iconConfig.strokeWidth} />
-                            </div>
-                            <span className="text-xs sm:text-[13px] font-bold text-main">
-                                {item.client?.nom} {item.client?.prenom}
-                            </span>
-                        </>
-                    ) : (
-                        <>
-                            <div className="p-2 rounded-lg bg-info/10 text-info">
-                                <Building2 className={iconConfig.sizes.breadcrumb} strokeWidth={iconConfig.strokeWidth} />
-                            </div>
-                            <span className="text-xs sm:text-[13px] font-bold text-main">
-                                {item.societe?.nom_societe}
-                            </span>
-                        </>
-                    )}
-                </div>
-            )
+            render: (item: GasoilWithDetails) => {
+                const isClient = !!item.client_id;
+                return (
+                    <div className="flex items-center gap-3">
+                        {isClient ? (
+                            <>
+                                <div className="p-2 rounded-lg bg-success/10 text-success">
+                                    <User className={iconConfig.sizes.breadcrumb} strokeWidth={iconConfig.strokeWidth} />
+                                </div>
+                                <span className="text-xs sm:text-[13px] font-bold text-main">
+                                    {item.client_nom} {item.client_prenom}
+                                </span>
+                            </>
+                        ) : (
+                            <>
+                                <div className="p-2 rounded-lg bg-info/10 text-info">
+                                    <Building2 className={iconConfig.sizes.breadcrumb} strokeWidth={iconConfig.strokeWidth} />
+                                </div>
+                                <span className="text-xs sm:text-[13px] font-bold text-main">
+                                    {item.societe_nom || item.societe?.nom_societe}
+                                </span>
+                            </>
+                        )}
+                    </div>
+                );
+            }
         },
         {
             header: 'Montant',
