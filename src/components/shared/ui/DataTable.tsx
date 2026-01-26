@@ -58,7 +58,7 @@ export default function DataTable<T>({
                                 return (
                                     <td
                                         key={colIndex}
-                                        className={`px-4 sm:px-6 py-4 text-xs sm:text-sm font-medium text-main ${col.className || ''}`}
+                                        className={`px-4 sm:px-6 py-4 text-xs sm:text-[13px] font-medium text-main ${col.className || ''}`}
                                     >
                                         <div className={`flex items-center ${isRightAligned ? 'justify-end' : ''}`}>
                                             {col.render(item)}

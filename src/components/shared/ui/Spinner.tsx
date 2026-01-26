@@ -43,7 +43,7 @@ export default function Spinner({
                 role="status"
             />
             {label && (
-                <p className="text-[10px] md:text-xs font-black text-muted uppercase tracking-widest animate-pulse">
+                <p className="text-[10px] md:text-xs font-black text-muted uppercase tracking-widest animate-pulse text-center max-w-[250px] leading-relaxed">
                     {label}
                 </p>
             )}

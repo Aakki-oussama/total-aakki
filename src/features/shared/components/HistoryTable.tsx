@@ -21,7 +21,7 @@ export default function HistoryTable({ history, loading, entityName = 'ce béné
         {
             header: 'Date',
             render: (item) => (
-                <span className="text-sm font-bold text-main">
+                <span className="text-xs sm:text-[13px] font-bold text-main">
                     {formatDateShort(item.date_operation)}
                 </span>
             )
@@ -34,11 +34,11 @@ export default function HistoryTable({ history, loading, entityName = 'ce béné
                         ? 'bg-warning/10 text-warning'
                         : 'bg-info/10 text-info'
                         }`}>
-                        {item.type === 'GASOIL' ? <Fuel size={18} /> : <Wallet size={18} />}
+                        {item.type === 'GASOIL' ? <Fuel size={16} /> : <Wallet size={16} />}
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-sm font-semibold text-main">{item.type}</span>
-                        <span className="text-xs text-muted truncate max-w-[200px]">{item.description}</span>
+                        <span className="text-xs sm:text-[13px] font-semibold text-main">{item.type}</span>
+                        <span className="text-[9px] sm:text-[10px] text-muted truncate max-w-[200px]">{item.description}</span>
                     </div>
                 </div>
             )
@@ -46,7 +46,7 @@ export default function HistoryTable({ history, loading, entityName = 'ce béné
         {
             header: 'Débit (-)',
             render: (item) => item.debit > 0 ? (
-                <span className="text-sm font-bold text-danger">
+                <span className="text-xs sm:text-[13px] font-semibold text-danger">
                     -{formatCurrency(item.debit)}
                 </span>
             ) : (
@@ -56,7 +56,7 @@ export default function HistoryTable({ history, loading, entityName = 'ce béné
         {
             header: 'Crédit (+)',
             render: (item) => item.credit > 0 ? (
-                <span className="text-sm font-bold text-success">
+                <span className="text-xs sm:text-[13px] font-semibold text-success">
                     +{formatCurrency(item.credit)}
                 </span>
             ) : (
@@ -66,7 +66,7 @@ export default function HistoryTable({ history, loading, entityName = 'ce béné
         {
             header: 'Solde',
             render: (item) => (
-                <span className={`text-sm font-black ${item.solde_ligne < 0 ? 'text-danger' : 'text-success'
+                <span className={`text-xs sm:text-[13px] font-black ${item.solde_ligne < 0 ? 'text-danger' : 'text-success'
                     }`}>
                     {formatCurrency(item.solde_ligne)}
                 </span>

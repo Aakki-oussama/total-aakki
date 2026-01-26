@@ -6,6 +6,7 @@ import { Modal, Button, MonthSelector } from '@/components/shared/ui';
 import { historyService } from '../services/historyService';
 import { HistoryPDF } from './HistoryPDF';
 import { useToast } from '@/context/toast/useToast';
+import { iconConfig } from '@/config/icons';
 
 interface HistoryExportProps {
     entityId: string;
@@ -80,14 +81,17 @@ export default function HistoryExport({ entityId, entityType, entityName }: Hist
 
     return (
         <>
-            <Button
-                variant="secondary"
+            <button
                 onClick={() => setIsOpen(true)}
-                className="flex items-center gap-2"
+                className="h-[48px] w-[48px] shrink-0 aspect-square flex items-center justify-center rounded-xl sm:rounded-2xl border border-border/60 bg-surface/80 hover:bg-surface transition-all shadow-sm group relative"
+                title="Exporter l'historique"
+                aria-label="Exporter l'historique"
             >
-                <Download size={18} />
-                <span className="hidden sm:inline">Exporter</span>
-            </Button>
+                <Download
+                    className={`${iconConfig.sizes.breadcrumb} text-muted group-hover:text-primary transition-colors`}
+                    strokeWidth={iconConfig.strokeWidth}
+                />
+            </button>
 
             <Modal
                 isOpen={isOpen}

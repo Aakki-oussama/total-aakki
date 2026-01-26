@@ -107,7 +107,7 @@ export default function DateFilter({
             <button
                 onClick={() => setIsOpen(!isOpen)}
                 className={`
-                    h-[48px] w-[48px] flex items-center justify-center rounded-xl sm:rounded-2xl border transition-all shadow-sm group relative
+                    h-[48px] w-[48px] shrink-0 aspect-square flex items-center justify-center rounded-xl sm:rounded-2xl border transition-all shadow-sm group relative
                     ${isOpen ? 'border-primary ring-2 ring-primary/10 bg-surface' : 'border-border/60 bg-surface/80 hover:bg-surface'}
                     ${date ? 'border-primary/50 bg-primary/5' : ''}
                 `}

@@ -22,7 +22,7 @@ export default function DashboardPage() {
             variant="content"
         >
             {loading ? (
-                <div className="flex items-center justify-center p-20">
+                <div className="flex items-center justify-center p-10 sm:p-20">
                     <Spinner size="lg" />
                 </div>
             ) : (
@@ -31,13 +31,13 @@ export default function DashboardPage() {
                     <DashboardStatsUI stats={stats} />
 
                     {/* 2. ANALYSES - Debt Split & Today's Activity */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                         <DebtSplitCard data={debtSplit} />
                         <TodayActivityCard stats={stats} />
                     </div>
 
                     {/* 3. OPÉRATIONS - Red List & Timeline */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
                         <TopDebtsCard debts={topDebts} />
                         <ActivityTimeline activities={timeline} />
                     </div>

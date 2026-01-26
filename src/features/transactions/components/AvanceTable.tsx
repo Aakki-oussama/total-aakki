@@ -44,12 +44,12 @@ export default function AvanceTable({
                             }
                         </div>
                         <div className="flex flex-col">
-                            <span className="font-bold text-main">
+                            <span className="text-xs sm:text-[13px] font-bold text-main">
                                 {isClient
                                     ? `${avance.client?.nom} ${avance.client?.prenom}`
                                     : avance.societe?.nom_societe}
                             </span>
-                            <span className="text-[10px] uppercase tracking-wider text-muted font-bold">
+                            <span className="text-[9px] sm:text-[10px] uppercase tracking-wider text-muted font-bold">
                                 {isClient ? 'Client' : 'Société'}
                             </span>
                         </div>
@@ -60,7 +60,7 @@ export default function AvanceTable({
         {
             header: 'Montant',
             render: (avance: AvanceWithDetails) => (
-                <span className="text-sm font-bold text-success bg-success/10 px-2 py-1 rounded">
+                <span className="text-xs sm:text-[13px] font-semibold text-success">
                     {formatCurrency(Number(avance.montant))}
                 </span>
             )

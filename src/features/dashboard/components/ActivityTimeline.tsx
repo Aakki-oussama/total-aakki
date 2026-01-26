@@ -23,7 +23,7 @@ interface ActivityTimelineProps {
  */
 const ActivityTimeline = ({ activities }: ActivityTimelineProps) => {
     return (
-        <Card variant="elevated" padding="lg" className="h-full shadow-xl">
+        <Card variant="elevated" padding="lg" className="shadow-xl">
             {/* Header */}
             <div className="flex items-center gap-3 mb-6">
                 <div className="p-2.5 rounded-2xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800/50">

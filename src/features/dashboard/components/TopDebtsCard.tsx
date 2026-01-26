@@ -14,7 +14,7 @@ interface TopDebtsCardProps {
  */
 const TopDebtsCard = ({ debts }: TopDebtsCardProps) => {
     return (
-        <Card className="h-full shadow-sm" padding="md">
+        <Card className="shadow-sm" padding="md">
             {/* Simple Header */}
             <div className="flex items-center gap-3 mb-6">
                 <div className="p-2 rounded-xl bg-primary/10 text-primary">

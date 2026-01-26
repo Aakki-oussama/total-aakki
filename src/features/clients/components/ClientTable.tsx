@@ -28,7 +28,7 @@ export default function ClientTable<T extends Client>({
             header: 'Client',
             render: (client: T) => (
                 <div className="flex flex-col">
-                    <span className="font-bold text-main">{client.nom} {client.prenom}</span>
+                    <span className="text-xs sm:text-[13px] font-bold text-main">{client.nom} {client.prenom}</span>
                 </div>
             )
         },
@@ -40,7 +40,7 @@ export default function ClientTable<T extends Client>({
                 const colorClass = solde < 0 ? 'text-danger' : 'text-success';
 
                 return (
-                    <span className={`font-bold ${colorClass}`}>
+                    <span className={`text-xs sm:text-[13px] font-semibold ${colorClass}`}>
                         {formatCurrency(solde)}
                     </span>
                 );

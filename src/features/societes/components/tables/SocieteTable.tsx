@@ -27,7 +27,7 @@ export default function SocieteTable({
         {
             header: 'Société',
             render: (societe: Societe) => (
-                <span className="font-bold text-main">{societe.nom_societe}</span>
+                <span className="text-xs sm:text-[13px] font-bold text-main">{societe.nom_societe}</span>
             )
         },
         {
@@ -38,7 +38,7 @@ export default function SocieteTable({
                 const colorClass = solde < 0 ? 'text-danger' : 'text-success';
 
                 return (
-                    <span className={`font-bold ${colorClass}`}>
+                    <span className={`text-xs sm:text-[13px] font-semibold ${colorClass}`}>
                         {formatCurrency(solde)}
                     </span>
                 );

@@ -35,7 +35,7 @@ export function GasoilTable({ data, loading, onEdit, onDelete }: GasoilTableProp
                             <div className="p-2 rounded-lg bg-success/10 text-success">
                                 <User className={iconConfig.sizes.breadcrumb} strokeWidth={iconConfig.strokeWidth} />
                             </div>
-                            <span className="font-bold text-main">
+                            <span className="text-xs sm:text-[13px] font-bold text-main">
                                 {item.client?.nom} {item.client?.prenom}
                             </span>
                         </>
@@ -44,7 +44,7 @@ export function GasoilTable({ data, loading, onEdit, onDelete }: GasoilTableProp
                             <div className="p-2 rounded-lg bg-info/10 text-info">
                                 <Building2 className={iconConfig.sizes.breadcrumb} strokeWidth={iconConfig.strokeWidth} />
                             </div>
-                            <span className="font-bold text-main">
+                            <span className="text-xs sm:text-[13px] font-bold text-main">
                                 {item.societe?.nom_societe}
                             </span>
                         </>
@@ -55,9 +55,9 @@ export function GasoilTable({ data, loading, onEdit, onDelete }: GasoilTableProp
         {
             header: 'Montant',
             render: (item: GasoilWithDetails) => (
-                <div className="flex items-center gap-1.5 font-bold text-warning bg-warning/10 px-2 py-1 rounded">
-                    <Fuel className={iconConfig.sizes.xs} strokeWidth={iconConfig.strokeWidth} />
-                    <span className="text-sm">{formatCurrency(Number(item.montant))}</span>
+                <div className="flex items-center gap-1 text-[11px] sm:text-[13px] font-semibold text-warning">
+                    <Fuel className="w-3 h-3" strokeWidth={iconConfig.strokeWidth} />
+                    <span>{formatCurrency(Number(item.montant))}</span>
                 </div>
             )
         },
