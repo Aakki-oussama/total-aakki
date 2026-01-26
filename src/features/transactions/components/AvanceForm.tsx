@@ -42,7 +42,7 @@ export default function AvanceForm({
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title={initialData ? "Modifier le paiement" : "Enregistrer un paiement"}
+            title={initialData ? "Modifier une Avance" : "Enregistrer une Avance"}
             size="md"
         >
             <form onSubmit={form.handleSubmit} className="space-y-4">
@@ -106,7 +106,7 @@ export default function AvanceForm({
                     )}
                 </div>
 
-                {/* 4. Payment Details (Amount, Date, Mode) */}
+                {/* 4. Payment Details (Amount, Mode, Date, Ref) */}
                 <div className="grid grid-cols-2 gap-3">
                     <Input
                         label="Montant (DH)"
@@ -118,7 +118,6 @@ export default function AvanceForm({
                         min="1"
                         step="1"
                     />
-                    <Input label="Date" type="date" value={form.dateAvance} onChange={e => form.setDateAvance(e.target.value)} required />
 
                     <Select
                         label="Mode"
@@ -130,6 +129,8 @@ export default function AvanceForm({
                             { value: 'CHEQUE', label: 'Chèque' }
                         ]}
                     />
+
+                    <Input label="Date" type="date" value={form.dateAvance} onChange={e => form.setDateAvance(e.target.value)} required />
 
                     {form.modePaiement === 'CHEQUE' && (
                         <Input label="N° Chèque" value={form.numeroCheque} onChange={e => form.setNumeroCheque(e.target.value)} required placeholder="CH-XXXX" />
