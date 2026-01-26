@@ -51,7 +51,7 @@ BEGIN
     REFRESH MATERIALIZED VIEW CONCURRENTLY mat_gasoil_par_jour;
     REFRESH MATERIALIZED VIEW CONCURRENTLY mat_gasoil_par_mois;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 -- ============================================
 -- INDEX SUPPLÉMENTAIRES pour performance
@@ -78,7 +78,9 @@ WHERE deleted_at IS NULL;
 -- VIEW OPTIMISÉE: Dashboard avec matviews
 -- ============================================
 
-CREATE OR REPLACE VIEW view_dashboard_optimized AS
+CREATE OR REPLACE VIEW view_dashboard_optimized 
+WITH (security_invoker = true)
+AS
 SELECT 
     (SELECT COUNT(*) FROM client WHERE deleted_at IS NULL) as total_clients,
     (SELECT COUNT(*) FROM societe WHERE deleted_at IS NULL) as total_societes,

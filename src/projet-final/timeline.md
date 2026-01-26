@@ -1,4 +1,6 @@
-CREATE OR REPLACE VIEW view_timeline_activite AS
+CREATE OR REPLACE VIEW view_timeline_activite 
+WITH (security_invoker = true)
+AS
 SELECT 
     id,
     date_operation,

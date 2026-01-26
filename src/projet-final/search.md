@@ -5,7 +5,9 @@
 -- ============================================
 
 -- VUE 1: liste_avances_recherchable
-CREATE OR REPLACE VIEW liste_avances_recherchable AS
+CREATE OR REPLACE VIEW liste_avances_recherchable 
+WITH (security_invoker = true)
+AS
 SELECT 
     a.*,
     c.nom as client_nom,
@@ -25,7 +27,9 @@ WHERE a.deleted_at IS NULL;
 
 -- ============================================
 -- VUE 2: liste_gasoil_recherchable
-CREATE OR REPLACE VIEW liste_gasoil_recherchable AS
+CREATE OR REPLACE VIEW liste_gasoil_recherchable 
+WITH (security_invoker = true)
+AS
 SELECT 
     g.*,
     c.nom as client_nom,

@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, AlertCircle } from 'lucide-react';
-import { supabase } from '../../lib/auth/auth';
+import { Mail, AlertCircle } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { useRateLimit } from '../../lib/hooks/useRateLimit';
 import Input from './ui/Input';
 import Button from '../../components/shared/ui/Button';
 
@@ -13,13 +14,19 @@ const LoginForm = () => {
     const [error, setError] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
 
+    // RATE LIMIT : 5 tentatives, Blocage 60 min (1h)
+    const { isBlocked, formatTimeLeft, recordAttempt, resetAttempts } = useRateLimit('auth_login_limit', 5, 60);
+
     // Validation
     const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     const isValidPassword = password.length >= 6;
-    const isFormValid = isValidEmail && isValidPassword;
+    const isFormValid = isValidEmail && isValidPassword && !isBlocked;
 
     const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+
+        if (isBlocked) return;
+
         if (!isFormValid) {
             setError('Veuillez vous assurer que votre e-mail est valide et que le mot de passe contient au moins 6 caractères.');
             return;
@@ -35,12 +42,15 @@ const LoginForm = () => {
             });
 
             if (authError) {
-                setError(authError.message === 'Invalid login credentials'
-                    ? 'Identifiants invalides. Veuillez vérifier votre e-mail et votre mot de passe.'
-                    : authError.message
-                );
+                recordAttempt(); // On enregistre l'échec
+
+                const baseMsg = authError.message === 'Invalid login credentials'
+                    ? 'Identifiants invalides.'
+                    : authError.message;
+
+                setError(baseMsg);
             } else {
-                // Direction le dashboard après succès
+                resetAttempts(); // Succès : On remet le compteur à zéro
                 navigate('/');
             }
         } catch (err) {
@@ -54,12 +64,7 @@ const LoginForm = () => {
     return (
         <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* Brand Header */}
-            <div className="text-center mb-8">
-                <div className="inline-flex p-4 bg-primary/10 rounded-2xl mb-4 ring-8 ring-primary/5">
-                    <div className="bg-primary p-2 rounded-xl text-primary-foreground">
-                        <Lock className="w-6 h-6" strokeWidth={2.5} />
-                    </div>
-                </div>
+            <div className="text-center mb-8 pt-4">
                 <h1 className="text-3xl font-black text-main tracking-tight italic">TOTAL <span className="text-primary not-italic underline decoration-4 underline-offset-4 decoration-primary/20">BOUMIA</span></h1>
                 <p className="text-muted font-bold mt-2 uppercase tracking-widest text-[10px]">Gestion Station Service</p>
             </div>
@@ -95,15 +100,15 @@ const LoginForm = () => {
                         placeholder="••••••••"
                         required
                         autoComplete="current-password"
-                        icon={Lock}
                         showPasswordToggle
                         showPassword={showPassword}
                         onTogglePassword={() => setShowPassword(!showPassword)}
                         error={password && !isValidPassword ? 'Min. 6 caractères requis' : undefined}
                     />
 
+
                     {/* Error Alert */}
-                    {error && (
+                    {error && !isBlocked && (
                         <div className="p-4 bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 rounded-2xl flex items-start space-x-3 animate-in shake-1" role="alert">
                             <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
                             <p className="text-xs text-red-800 dark:text-red-300 font-bold uppercase tracking-tight leading-relaxed">{error}</p>
@@ -113,12 +118,12 @@ const LoginForm = () => {
                     {/* Submit Button */}
                     <Button
                         type="submit"
-                        disabled={!isFormValid}
+                        disabled={!isFormValid || isBlocked}
                         loading={loading}
                         fullWidth
                         size="lg"
                     >
-                        Accéder au Tableau de Bord
+                        {isBlocked ? `Bloqué (Attente ${formatTimeLeft})` : 'Accéder au Tableau de Bord'}
                     </Button>
                 </form>
             </div>

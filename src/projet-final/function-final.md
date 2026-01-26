@@ -40,7 +40,7 @@ BEGIN
         solde_actuel = v_solde,
         updated_at = NOW();
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 -- ============================================
 -- FUNCTION 2: Recalculer le solde pour une société
@@ -80,7 +80,7 @@ BEGIN
         solde_actuel = v_solde,
         updated_at = NOW();
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 -- ============================================
 -- FUNCTION 3: Obtenir les stats d'un client
@@ -105,7 +105,7 @@ BEGIN
     FROM solde s
     WHERE s.client_id = p_client_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 -- ============================================
 -- FUNCTION 4: Obtenir les stats d'une société
@@ -130,7 +130,7 @@ BEGIN
     FROM solde s
     WHERE s.societe_id = p_societe_id;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 -- ============================================
 -- FUNCTION 5: Soft delete avance
@@ -156,7 +156,7 @@ BEGIN
         PERFORM recalculer_solde_societe(v_societe_id);
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 -- ============================================
 -- FUNCTION 6: Soft delete gasoil
@@ -182,7 +182,7 @@ BEGIN
         PERFORM recalculer_solde_societe(v_societe_id);
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 -- ============================================
 -- FUNCTION 7: Restaurer avance
@@ -208,7 +208,7 @@ BEGIN
         PERFORM recalculer_solde_societe(v_societe_id);
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 -- ============================================
 -- FUNCTION 8: Restaurer gasoil
@@ -234,7 +234,7 @@ BEGIN
         PERFORM recalculer_solde_societe(v_societe_id);
     END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 -- ============================================
 -- FUNCTION 9: Créer client avec solde initial
@@ -277,7 +277,7 @@ BEGIN
         'solde_initial', p_montant_initial
     );
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 -- ============================================
 -- FUNCTION 10: Créer société avec solde initial
@@ -319,7 +319,7 @@ BEGIN
         'solde_initial', p_montant_initial
     );
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 -- ============================================
 -- FIN FUNCTIONS FINAL

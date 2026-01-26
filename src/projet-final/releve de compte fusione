@@ -3,7 +3,9 @@
 -- Mélange Gasoil (-) et Avances (+)
 -- ============================================
 
-CREATE OR REPLACE VIEW view_releve_compte AS
+CREATE OR REPLACE VIEW view_releve_compte 
+WITH (security_invoker = true)
+AS
 SELECT 
     *,
     -- Calcul du solde progressif (Running Balance)

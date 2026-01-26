@@ -6,7 +6,9 @@
 -- VIEW 1: Liste clients avec solde
 -- ============================================
 
-CREATE OR REPLACE VIEW view_clients_avec_solde AS
+CREATE OR REPLACE VIEW view_clients_avec_solde 
+WITH (security_invoker = true)
+AS
 SELECT 
     c.id,              -- Garder 'id' pour matcher le code actuel
     c.nom,
@@ -25,7 +27,9 @@ WHERE c.deleted_at IS NULL;
 -- VIEW 2: Liste sociétés avec solde
 -- ============================================
 
-CREATE OR REPLACE VIEW view_societes_avec_solde AS
+CREATE OR REPLACE VIEW view_societes_avec_solde 
+WITH (security_invoker = true)
+AS
 SELECT 
     soc.id,            -- Garder 'id' nature
     soc.nom_societe,
@@ -42,7 +46,9 @@ WHERE soc.deleted_at IS NULL;
 -- VIEW 3: IMPAYÉS (solde négatif)
 -- ============================================
 
-CREATE OR REPLACE VIEW view_impayes AS
+CREATE OR REPLACE VIEW view_impayes 
+WITH (security_invoker = true)
+AS
 SELECT 
     s.id as solde_id,
     CASE 
@@ -68,7 +74,9 @@ ORDER BY s.solde_actuel ASC;
 -- VIEW 4: Dashboard global
 -- ============================================
 
-CREATE OR REPLACE VIEW view_dashboard_global AS
+CREATE OR REPLACE VIEW view_dashboard_global 
+WITH (security_invoker = true)
+AS
 SELECT 
     (SELECT COUNT(*) FROM client WHERE deleted_at IS NULL) as total_clients,
     (SELECT COUNT(*) FROM societe WHERE deleted_at IS NULL) as total_societes,

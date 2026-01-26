@@ -47,7 +47,7 @@ BEGIN
 
     RETURN result;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 -- ============================================
 -- UTILISATION :
