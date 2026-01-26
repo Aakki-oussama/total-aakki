@@ -144,15 +144,16 @@ export function useServerResource<T extends { id?: string }, TArgs extends unkno
 
             const result = await submitFn(formData);
 
-            // Show specific message or fallback to successMessage
+            // Re-sync with server for safety and counters
+            await loadData();
+
+            // Show success message
             const finalMessage = isEditing
                 ? (onUpdateMessage || onSuccessMessage)
                 : (onCreateMessage || onSuccessMessage);
-
             if (finalMessage) success(finalMessage);
 
-            // Re-sync with server for safety and counters
-            await loadData();
+            // ONLY CLOSE IF SUCCESSFUL
             modals.closeAll();
             return result;
         } catch (err) {
@@ -160,6 +161,7 @@ export function useServerResource<T extends { id?: string }, TArgs extends unkno
             setData(backupData);
             const translatedMsg = mapSupabaseError(err);
             toastError(translatedMsg);
+            // On ne ferme pas le modal ici, on laisse l'utilisateur corriger
             throw err;
         } finally {
             setIsSubmitting(false);

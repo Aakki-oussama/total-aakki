@@ -3,6 +3,7 @@ import { useServerResource } from '@/lib/hooks/useServerResource';
 import { avanceService, type AvanceWithDetails } from '../services/avanceService';
 import type { Avance } from '@/types/tables';
 import { useToast } from '@/context/toast/useToast';
+import { mapSupabaseError } from '@/lib/supabase/error-handler';
 
 interface UseAvancesOptions {
     clientId?: string;
@@ -65,11 +66,12 @@ export function useAvances(options: UseAvancesOptions = {}) {
         try {
             await avanceService.createClientWithAvance(payload.nom, payload.prenom, payload.montant);
             success('Client et paiement créés avec succès');
-            refresh();
+            await refresh();
+            // ON FERME UNIQUEMENT SI RÉUSSITE
             modals.closeAll();
         } catch (err) {
-            const message = err instanceof Error ? err.message : 'Erreur lors de la création';
-            toastError(message);
+            toastError(mapSupabaseError(err));
+            throw err; // On relance l'erreur pour que le formulaire ne se ferme pas
         } finally {
             setIsSubmitting(false);
         }
@@ -80,11 +82,12 @@ export function useAvances(options: UseAvancesOptions = {}) {
         try {
             await avanceService.createSocieteWithAvance(payload.nom_societe, payload.montant);
             success('Société et paiement créés avec succès');
-            refresh();
+            await refresh();
+            // ON FERME UNIQUEMENT SI RÉUSSITE
             modals.closeAll();
         } catch (err) {
-            const message = err instanceof Error ? err.message : 'Erreur lors de la création';
-            toastError(message);
+            toastError(mapSupabaseError(err));
+            throw err;
         } finally {
             setIsSubmitting(false);
         }

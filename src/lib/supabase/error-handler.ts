@@ -20,9 +20,9 @@ export const mapSupabaseError = (error: unknown): string => {
     switch (code) {
         // Erreurs de contraintes (Unique, Foreign Key, etc.)
         case '23505':
-            return 'Cet enregistrement existe déjà dans la base de données.';
+            return 'Ce nom (ou identifiant) est déjà utilisé. Veuillez en choisir un autre.';
         case '23503':
-            return 'Impossible de supprimer cet élément car il est lié à d\'autres données.';
+            return 'Impossible de supprimer cet élément car il est lié à d\'autres données (ex: factures ou opérations).';
         case '23502': {
             const details = (errorObj.details as string) || (errorObj.message as string) || '';
             const hint = (errorObj.hint as string) || '';
@@ -34,9 +34,10 @@ export const mapSupabaseError = (error: unknown): string => {
         case '401':
         case 401:
             return 'Votre session a expiré. Veuillez vous reconnecter.';
+        case '42501':
         case '403':
         case 403:
-            return 'Vous n\'avez pas la permission d\'effectuer cette action.';
+            return 'Accès refusé : Vous n\'avez pas les permissions nécessaires dans Supabase (RLS).';
 
         // Erreurs de syntaxe ou de validation côté serveur
         case 'PGRST116':
@@ -49,7 +50,13 @@ export const mapSupabaseError = (error: unknown): string => {
             return 'La requête a pris trop de temps. Veuillez réessayer.';
 
         default:
-            // Si le message contient des mots clés spécifiques
+            // Détection par message textuel (pour les erreurs RLS remontées bizarrement)
+            if (technicalMessage.toLowerCase().includes('violates row-level security policy')) {
+                // On vérifie si c'est un code de doublon ou juste une interdiction
+                if (code === '23505') return 'Ce nom est déjà utilisé.';
+                return `Action refusée par la base de données (Code: ${code}). Vérifiez les permissions RLS.`;
+            }
+
             if (technicalMessage.toLowerCase().includes('failed to fetch')) {
                 return 'Impossible de contacter le serveur. Vérifiez votre connexion internet.';
             }
