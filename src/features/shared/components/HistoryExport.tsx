@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Download, Calendar } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { pdf } from '@react-pdf/renderer';
 import { saveAs } from 'file-saver';
-import { Modal, Button } from '@/components/shared/ui';
+import { Modal, Button, MonthSelector } from '@/components/shared/ui';
 import { historyService } from '../services/historyService';
 import { HistoryPDF } from './HistoryPDF';
 import { useToast } from '@/context/toast/useToast';
@@ -119,15 +119,11 @@ export default function HistoryExport({ entityId, entityType, entityName }: Hist
                     <p className="text-[9px] uppercase tracking-wider font-bold text-muted">
                         Choisir un mois spécifique
                     </p>
-                    <div className="relative group max-w-[240px] mx-auto">
-                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 text-primary/60" size={16} />
-                        <input
-                            type="month"
-                            value={selectedMonth}
-                            onChange={(e) => setSelectedMonth(e.target.value)}
-                            className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-border focus:border-primary/40 focus:ring-2 focus:ring-primary/5 outline-none bg-surface text-main font-bold text-sm transition-all"
-                        />
-                    </div>
+                    <MonthSelector
+                        value={selectedMonth}
+                        onChange={setSelectedMonth}
+                        className="max-w-[280px] mx-auto"
+                    />
                 </div>
             </Modal>
         </>

@@ -48,26 +48,34 @@ const ActivityTimeline = ({ activities }: ActivityTimelineProps) => {
                             <div className={`absolute left-4.5 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full z-10 ${isRevenu ? 'bg-avance' : 'bg-gasoil'
                                 }`} />
 
-                            <div className="flex items-center justify-between p-4 rounded-2xl bg-muted/10 border border-border/50 transition-all">
+                            <div className="flex items-center justify-between p-4 rounded-2xl bg-muted/10 border border-border/50 transition-all hover:bg-surface shadow-sm sm:shadow-none sm:hover:shadow-md">
                                 <div className="flex flex-col overflow-hidden">
-                                    <span className="text-xs font-black text-main uppercase truncate max-w-[120px] sm:max-w-[200px]">
+                                    <span className="text-xs font-black text-main uppercase truncate max-w-[150px] sm:max-w-[200px]">
                                         {act.nom_entite || 'Inconnu'}
                                     </span>
-                                    <div className="flex items-center gap-2 mt-0.5">
-                                        <span className="text-[9px] font-black text-muted uppercase tracking-tighter">{act.type_entite}</span>
-                                        <span className="text-[9px] text-muted/30">•</span>
-                                        <div className="flex items-center gap-1 text-[9px] text-muted font-bold uppercase">
-                                            <Clock className="w-2 h-2" strokeWidth={iconConfig.strokeWidth} />
+
+                                    {/* Responsive Meta: Stacked on mobile, row on desktop */}
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-1">
+                                        <span className="text-[9px] font-black text-muted uppercase tracking-tighter leading-none">
+                                            {act.type_entite}
+                                        </span>
+                                        <span className="hidden sm:inline text-[9px] text-muted/30">•</span>
+                                        <div className="flex items-center gap-1 text-[9px] text-muted font-bold uppercase leading-none">
+                                            <Clock className="w-2.5 h-2.5" strokeWidth={iconConfig.strokeWidth} />
                                             {formatDateShort(act.date_operation)}
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className={`flex items-center gap-1 text-sm font-black shrink-0 ${isRevenu ? 'text-avance-text' : 'text-gasoil-text'
+                                <div className={`flex items-start sm:items-center gap-1 text-sm font-black shrink-0 ${isRevenu ? 'text-avance-text' : 'text-gasoil-text'
                                     }`}>
-                                    {isRevenu ? '+' : '-'}
-                                    {formatCurrency(act.montant)}
-                                    {isRevenu ? <ArrowUpRight className="w-3 h-3" strokeWidth={3} /> : <ArrowDownRight className="w-3 h-3" strokeWidth={3} />}
+                                    <span className="mt-0.5 sm:mt-0">{isRevenu ? '+' : '-'}</span>
+                                    <span>{formatCurrency(act.montant)}</span>
+                                    {isRevenu ? (
+                                        <ArrowUpRight className={iconConfig.sizes.breadcrumb} strokeWidth={iconConfig.strokeWidth} />
+                                    ) : (
+                                        <ArrowDownRight className={iconConfig.sizes.breadcrumb} strokeWidth={iconConfig.strokeWidth} />
+                                    )}
                                 </div>
                             </div>
                         </div>

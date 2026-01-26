@@ -25,7 +25,7 @@ export default function SocieteTable({
 }: SocieteTableProps) {
     const columns = useMemo(() => [
         {
-            header: 'Nom de la Société',
+            header: 'Société',
             render: (societe: Societe) => (
                 <span className="font-bold text-main">{societe.nom_societe}</span>
             )
@@ -45,7 +45,7 @@ export default function SocieteTable({
             }
         },
         {
-            header: 'Date de Création',
+            header: 'Crée le',
             render: (societe: Societe) => {
                 return (
                     <span className="text-muted font-medium">

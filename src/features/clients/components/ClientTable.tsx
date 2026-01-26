@@ -47,7 +47,7 @@ export default function ClientTable<T extends Client>({
             }
         },
         {
-            header: 'Date d\'ajout',
+            header: 'Crée le',
             render: (client: T) => (
                 <span className="text-muted font-medium">
                     {formatDateShort(client.created_at)}
