@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useClients } from '@/features/clients/hook/useClients';
+import { useClients } from '@/features/clients/hooks/useClients';
 import { useSocietes } from '@/features/societes/hook/useSocietes';
 import type { Avance } from '@/types/tables';
 import type { AvanceWithDetails } from '../services/avanceService';

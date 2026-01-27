@@ -1,5 +1,5 @@
 import PageLayout from '@/components/layout/PageLayout';
-import { useClients } from '@/features/clients/hook/useClients';
+import { useClients } from '@/features/clients/hooks/useClients';
 import ClientTable from '@/features/clients/components/ClientTable';
 import ClientForm from '@/features/clients/components/ClientForm';
 import { Modal, DeleteConfirmationModal, SearchBar, DateFilter, PaginatedTableFooter } from '@/components/shared/ui';
