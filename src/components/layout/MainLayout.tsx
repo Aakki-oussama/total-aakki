@@ -29,7 +29,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                     isSidebarOpen={sidebarOpen}
                 />
 
-                <main className="flex-1 overflow-auto p-4 lg:p-8 pb-24 lg:pb-8">
+                <main className="flex-1 overflow-auto p-4 lg:p-8 pb-32 lg:pb-8">
                     {children}
                 </main>
             </div>

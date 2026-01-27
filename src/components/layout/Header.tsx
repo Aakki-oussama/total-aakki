@@ -1,10 +1,9 @@
-
 import { useTheme } from '@/context';
 import Breadcrumbs from './Breadcrumbs';
 import { Sun, Moon, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
-import { currentUser } from '@/config/user';
 import { appConfig } from '@/config/app';
 import { iconConfig } from '@/config/icons';
+import LogoutButton from './LogoutButton';
 
 interface HeaderProps {
     toggleSidebar: () => void;
@@ -52,9 +51,7 @@ const Header = ({ toggleSidebar, isSidebarOpen }: HeaderProps) => {
                     )}
                 </button>
 
-                <div className="h-8 w-8 lg:h-10 lg:w-10 rounded-lg lg:rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-bold text-[10px] lg:text-sm shadow-sm cursor-pointer hover:opacity-90 transition-opacity">
-                    {currentUser.initials}
-                </div>
+                <LogoutButton variant="header" />
             </div>
         </header>
     );

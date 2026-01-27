@@ -15,7 +15,7 @@ export function useRateLimit(key: string = 'auth_limit', maxAttempts: number = 5
         if (saved) {
             try {
                 return JSON.parse(saved);
-            } catch (e) {
+            } catch {
                 return { attempts: 0, blockedUntil: null };
             }
         }
