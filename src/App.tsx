@@ -6,7 +6,6 @@ import { Spinner } from '@/components/shared/ui';
 
 // Auth & Protection
 import ProtectedRoute from './features/auth/ProtectedRoute';
-import ErrorBoundary from './components/shared/ErrorBoundary';
 import LoginPage from './pages/login/Login';
 
 // Pages
@@ -20,51 +19,49 @@ const ClientView = lazy(() => import('./pages/clients/view'));
 
 function App() {
   return (
-    <ErrorBoundary>
-      <Suspense fallback={
-        <div className="flex justify-center items-center min-h-screen bg-background">
-          <Spinner size="lg" />
-        </div>
-      }>
-        <Routes>
-          {/* Public Route */}
-          <Route path="/login" element={<LoginPage />} />
+    <Suspense fallback={
+      <div className="flex justify-center items-center min-h-screen bg-background">
+        <Spinner size="lg" />
+      </div>
+    }>
+      <Routes>
+        {/* Public Route */}
+        <Route path="/login" element={<LoginPage />} />
 
-          {/* Protected Routes */}
-          <Route path="/*" element={
-            <ProtectedRoute>
-              <MainLayout>
-                <Routes>
-                  <Route path="/" element={<DashboardPage />} />
-                  <Route path="/clients" element={<ClientsPage />} />
-                  <Route path="/clients/:id" element={<ClientView />} />
-                  <Route path="/societes" element={<SocietesPage />} />
-                  <Route path="/societes/:id" element={<SocieteViewPage />} />
-                  <Route path="/paiements" element={<AvancesPage />} />
-                  <Route path="/gasoil" element={<GasoilPage />} />
+        {/* Protected Routes */}
+        <Route path="/*" element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Routes>
+                <Route path="/" element={<DashboardPage />} />
+                <Route path="/clients" element={<ClientsPage />} />
+                <Route path="/clients/:id" element={<ClientView />} />
+                <Route path="/societes" element={<SocietesPage />} />
+                <Route path="/societes/:id" element={<SocieteViewPage />} />
+                <Route path="/paiements" element={<AvancesPage />} />
+                <Route path="/gasoil" element={<GasoilPage />} />
 
-                  {/* Catch-all for sub-routes or 404 */}
-                  <Route path="/:id" element={
-                    <PageLayout
-                      title="Navigation"
-                      description="Page en cours de chargement..."
-                      variant="content"
-                    >
-                      <div className="bg-surface border border-border p-8 rounded-2xl shadow-sm">
-                        <h2 className="text-xl font-bold mb-4 text-main">Chargement...</h2>
-                      </div>
-                    </PageLayout>
-                  } />
+                {/* Catch-all for sub-routes or 404 */}
+                <Route path="/:id" element={
+                  <PageLayout
+                    title="Navigation"
+                    description="Page en cours de chargement..."
+                    variant="content"
+                  >
+                    <div className="bg-surface border border-border p-8 rounded-2xl shadow-sm">
+                      <h2 className="text-xl font-bold mb-4 text-main">Chargement...</h2>
+                    </div>
+                  </PageLayout>
+                } />
 
-                  {/* Redirect if nothing matches under the protected path */}
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </MainLayout>
-            </ProtectedRoute>
-          } />
-        </Routes>
-      </Suspense>
-    </ErrorBoundary>
+                {/* Redirect if nothing matches under the protected path */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </MainLayout>
+          </ProtectedRoute>
+        } />
+      </Routes>
+    </Suspense>
   );
 }
 

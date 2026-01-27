@@ -4,6 +4,7 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import MobileNav from './MobileNav';
 import { navItems } from '../../config/navigation';
+import ErrorBoundary from '../shared/ErrorBoundary';
 
 interface MainLayoutProps {
     children: ReactNode;
@@ -30,7 +31,9 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                 />
 
                 <main className="flex-1 overflow-auto p-4 lg:p-8 pb-32 lg:pb-8">
-                    {children}
+                    <ErrorBoundary>
+                        {children}
+                    </ErrorBoundary>
                 </main>
             </div>
 
